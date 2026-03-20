@@ -52,6 +52,13 @@ Apply these defaults whenever they do not conflict with an explicit user request
 - For self-consistent VASP runs, set `ISYM = 2`.
 - For non-SCF runs without SOC, including band-structure and Wannier-interface steps, set `ISYM = 2`.
 - For SOC-enabled non-SCF, band-structure, and Wannier-interface runs, set `ISYM = -1`.
+- For all self-consistent runs, keep `ISYM = 2` even when SOC or noncollinear magnetism is present unless the user explicitly overrides this.
+- Set `ENCUT` to `1.3x` to `1.5x` the largest `ENMAX` among the elements in the chosen POTCAR set unless the user explicitly asks otherwise.
+- Never set `ADDGRID` unless the user explicitly asks for it.
+- For systems that are nonperiodic along one direction, such as slabs, 2D materials, or cells with a large vacuum direction, use a `Gamma`-centered mesh and set the nonperiodic direction to `1`.
+- Prefer `Gamma`-centered meshes for self-consistent runs in this workflow unless the user explicitly specifies a different mesh convention.
+- If SOC is enabled or the run is noncollinear, always use `vasp_ncl`.
+- If the system is nonmagnetic and has no SOC, use `vasp_std`.
 - For VASP calculations in this workflow, set `LREAL = .FALSE.` unless the user explicitly asks otherwise.
 - Keep `INCAR` inputs lean; do not add parameters unless they are needed for the target physics, interface handoff, convergence, or a user-stated requirement.
 - For band-path calculations, use 20 points per path segment unless the user specifies otherwise.
