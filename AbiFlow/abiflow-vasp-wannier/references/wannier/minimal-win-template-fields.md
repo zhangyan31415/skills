@@ -4,7 +4,7 @@
 | --- | --- |
 | all cases | `num_wann`, `num_iter`, `iprint = 3`, `begin projections ... end projections` |
 | version-sensitive handoff | a comment noting that `num_bands` must match the exported interface files |
-| SOC / spinor | `spinors = true` |
+| SOC / spinor | `spinors = true` and explicit `(u)` and/or `(d)` labels when the projection lines are spin-resolved |
 | entangled or conditional disentanglement cases | explicit `dis_froz_*` and `dis_win_*` logic or commented first-pass placeholders |
 | isolated manifold | omit disentanglement fields on the first pass |
 
