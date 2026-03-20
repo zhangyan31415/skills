@@ -63,6 +63,8 @@ Apply these defaults whenever they do not conflict with an explicit user request
 - Keep `INCAR` inputs lean; do not add parameters unless they are needed for the target physics, interface handoff, convergence, or a user-stated requirement.
 - For band-path calculations, use 20 points per path segment unless the user specifies otherwise.
 - For the Wannier-interface VASP step, write `WAVECAR` and read it back with `ISTART = 1`.
+- Never set `LWANNIER90_RUN = .TRUE.` in this workflow. Keep Wannier optimization outside VASP in a separate run directory unless the user explicitly overrides this.
+- For spinor, SOC, or otherwise spin-resolved Wannier projections, always specify the spin channel explicitly with `(u)` and/or `(d)`. Do not leave spin ambiguity implicit in projection lines.
 
 ## Output Contract
 

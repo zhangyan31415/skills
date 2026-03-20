@@ -30,7 +30,15 @@ Use this file when deciding whether the VASP side is ready for a meaningful Wann
 - standard first-pass band step: use `ICHARG=11`
 - do not treat `NELM=1` as a generic default
 - keep `PREC=Normal` unless the observable demands more
-- be deliberate about `ISYM`; do not leave it on blindly in SOC, noncollinear, or symmetry-lowered magnetic cases
+- keep `LREAL = .FALSE.` for reliable Wannier handoff unless the user explicitly overrides this
+- use `ISYM = 2` for SCF and for non-SCF steps without SOC, and switch SOC-enabled non-SCF steps to `ISYM = -1`
+- write `WAVECAR` and read it back with `ISTART = 1` for the Wannier-interface step
+- do not leave symmetry on blindly when the target physics is SOC-sensitive, noncollinear, or symmetry-lowered
+
+## Wannier execution boundary
+
+- keep Wannier optimization outside VASP in a separate run directory by default
+- do not set `LWANNIER90_RUN = .TRUE.` unless the user explicitly overrides this workflow rule
 
 ## Version-family guidance
 
