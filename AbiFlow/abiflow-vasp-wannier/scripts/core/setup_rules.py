@@ -159,6 +159,7 @@ def _minimal_win_fields(recommendation: Dict[str, Any]) -> List[str]:
         f"num_wann = {recommendation['num_wann']}",
         "! num_bands must be consistent with the exported VASP-to-Wannier handoff once the interface path is confirmed",
         "num_iter = 200",
+        "iprint = 3",
     ]
     if recommendation["case_id"] in {"soc_spinor", "noncollinear_magnetic"}:
         fields.append("spinors = true")

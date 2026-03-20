@@ -3,6 +3,7 @@
 num_wann = {{num_wann}}
 ! num_bands = confirm against the VASP-to-Wannier handoff
 num_iter = 200
+iprint = 3
 {{spinors_line}}
 begin projections
 {{projections_block}}

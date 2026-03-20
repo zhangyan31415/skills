@@ -27,6 +27,7 @@ def test_isolated_template_omits_disentanglement_fields():
     template = draft_win_template(rec)
 
     assert "num_wann = 4" in template
+    assert "iprint = 3" in template
     assert "begin projections" in template
     assert "dis_win_" not in template
     assert "spinors = true" not in template

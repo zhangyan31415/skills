@@ -2,7 +2,7 @@
 
 | Situation | Fields that must appear |
 | --- | --- |
-| all cases | `num_wann`, `num_iter`, `begin projections ... end projections` |
+| all cases | `num_wann`, `num_iter`, `iprint = 3`, `begin projections ... end projections` |
 | version-sensitive handoff | a comment noting that `num_bands` must match the exported interface files |
 | SOC / spinor | `spinors = true` |
 | entangled or conditional disentanglement cases | explicit `dis_froz_*` and `dis_win_*` logic or commented first-pass placeholders |
