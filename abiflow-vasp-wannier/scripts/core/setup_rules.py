@@ -70,6 +70,10 @@ def _setup_rules(skill_root: Path) -> Dict[str, Dict[str, Any]]:
     return load_section_map(skill_root / "assets" / "data" / "setup-rules.toml")
 
 
+def _vasp_band_policies(skill_root: Path) -> Dict[str, Dict[str, Any]]:
+    return load_section_map(skill_root / "assets" / "data" / "vasp-band-policies.toml")
+
+
 def _candidate_families(facts: Dict[str, Any], case_entry: Dict[str, Any]) -> List[str]:
     value = facts.get("candidate_orbital_families")
     if isinstance(value, list) and value:
@@ -182,6 +186,25 @@ def _minimal_win_fields(recommendation: Dict[str, Any]) -> List[str]:
     return fields
 
 
+def _recommended_vasp_band_settings(skill_root: Path, case_id: str) -> Dict[str, Any]:
+    policies = _vasp_band_policies(skill_root)
+    common = policies["common"]
+    specific = policies[case_id]
+    return {
+        "icharg": int(common["icharg"]),
+        "nelm_value": int(common["nelm_value"]),
+        "nelm_mode": common["nelm_mode"],
+        "nelm_reasoning": common["nelm_reasoning"],
+        "symmetry_mode": specific["symmetry_mode"],
+        "isym_value": int(specific["isym_value"]),
+        "fallback_isym_value": int(specific["fallback_isym_value"]) if "fallback_isym_value" in specific else None,
+        "symmetry_reasoning": specific["symmetry_reasoning"],
+        "precision_profile": common["precision_profile"],
+        "prec_value": common["prec_value"],
+        "precision_reasoning": common["precision_reasoning"],
+    }
+
+
 def recommend_wannier_setup(skill_root: Path, facts: Dict[str, Any], *, vasp_version: Optional[str] = None, wannier_version: Optional[str] = None, band_energies: Optional[Iterable[float]] = None, procar_path: Optional[Path] = None) -> Dict[str, Any]:
     classification = classify_wannier_case(skill_root, facts, vasp_version=vasp_version, wannier_version=wannier_version)
     case_id = classification["case_id"]
@@ -226,6 +249,7 @@ def recommend_wannier_setup(skill_root: Path, facts: Dict[str, Any], *, vasp_ver
         "numeric_window_recommendation": window["numeric_window_recommendation"],
         "minimal_win_fields": [],
         "required_vasp_outputs": list(setup_rule.get("required_vasp_outputs", [])),
+        "recommended_vasp_band_settings": _recommended_vasp_band_settings(skill_root, case_id),
         "validation_checks": list(setup_rule.get("validation_checks", [])),
         "first_revision_actions_ranked": list(setup_rule.get("first_revision_actions_ranked", [])),
         "first_revision_actions": list(setup_rule.get("first_revision_actions_ranked", [])),

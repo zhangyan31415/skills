@@ -36,6 +36,7 @@ Do not use this skill to guess exact launch commands when the user has not provi
    - [`references/version-combinations.md`](references/version-combinations.md)
 9. Load deeper topic references only for the active question:
    - VASP setup: [`references/vasp/relax-scf-bands.md`](references/vasp/relax-scf-bands.md), [`references/vasp/incar-knobs.md`](references/vasp/incar-knobs.md)
+   - VASP symmetry and precision: [`references/vasp/symmetry-policy.md`](references/vasp/symmetry-policy.md), [`references/vasp/precision-policy.md`](references/vasp/precision-policy.md)
    - VASP orbital evidence: [`references/vasp/procar-analysis.md`](references/vasp/procar-analysis.md)
    - Setup cookbook and tables: `references/wannier/cookbook/`, [`references/wannier/parameter-decision-table.md`](references/wannier/parameter-decision-table.md), [`references/wannier/minimal-win-template-fields.md`](references/wannier/minimal-win-template-fields.md), [`references/wannier/num-wann-counting.md`](references/wannier/num-wann-counting.md), [`references/vasp/interface-handoff.md`](references/vasp/interface-handoff.md), [`references/wannier/revision-playbook.md`](references/wannier/revision-playbook.md)
    - Debug flow: [`references/debug/routing-taxonomy.md`](references/debug/routing-taxonomy.md), `references/debug/`
@@ -88,6 +89,8 @@ Do not fabricate exact syntax when `syntax_support_tier` is weak or unknown.
 - Assuming a VASP version implies site-specific HDF5 or launcher behavior.
 - Treating a raw error message like a generic workflow question instead of routing it through triage and official-source rules.
 - Ignoring `PROCAR` when several projection families are plausible and orbital character is the missing evidence.
+- Writing `NELM=1` as a generic first-pass band-step default.
+- Leaving symmetry on by reflex when the target physics is SOC-sensitive, noncollinear, or symmetry-lowered.
 - Saying only “tune the windows” without stating what to change first and why.
 - Treating weak or unknown syntax support like strong support.
 - Suggesting exact `module load` or MPI commands without a profile.

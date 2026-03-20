@@ -34,6 +34,10 @@ def test_isolated_insulator_recommendation_is_concrete():
     assert rec["window_strategy"] == "omit"
     assert rec["numeric_window_recommendation"] is None
     assert rec["physics_support_tier"] == "strong"
+    assert rec["recommended_vasp_band_settings"]["icharg"] == 11
+    assert rec["recommended_vasp_band_settings"]["nelm_value"] != 1
+    assert rec["recommended_vasp_band_settings"]["symmetry_mode"] == "keep_on_initially"
+    assert rec["recommended_vasp_band_settings"]["prec_value"] == "Normal"
     assert rec["validation_checks"]
     assert rec["first_revision_actions_ranked"]
 
@@ -57,6 +61,8 @@ def test_entangled_metal_recommendation_contains_window_logic():
     assert rec["numeric_window_recommendation"] is not None
     assert any("dis_win_" in field for field in rec["minimal_win_fields"])
     assert any("dis_froz_" in field for field in rec["minimal_win_fields"])
+    assert rec["recommended_vasp_band_settings"]["nelm_value"] != 1
+    assert rec["recommended_vasp_band_settings"]["symmetry_mode"] == "guarded"
 
 
 def test_same_physics_case_keeps_setup_logic_but_changes_interface_guardrails():
@@ -85,3 +91,15 @@ def test_unsupported_version_family_forces_official_search():
     assert rec["physics_support_tier"] in {"guarded", "weak"}
     assert rec["interface_support_tier"] in {"weak", "unknown"}
     assert rec["syntax_support_tier"] in {"weak", "unknown"}
+
+
+def test_soc_case_disables_symmetry_for_band_step():
+    rec = recommend_wannier_setup(
+        ROOT,
+        _load_case("soc-spinor.json"),
+        vasp_version="6.4.2",
+        wannier_version="3.1.0",
+    )
+
+    assert rec["recommended_vasp_band_settings"]["symmetry_mode"] == "disable"
+    assert rec["recommended_vasp_band_settings"]["isym_value"] == 0
