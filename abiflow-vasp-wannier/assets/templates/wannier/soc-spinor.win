@@ -3,6 +3,7 @@
 num_wann = {{num_wann}}
 ! num_bands = confirm against the spinor-aware interface handoff
 num_iter = 200
+iprint = 3
 spinors = true
 begin projections
 {{projections_block}}

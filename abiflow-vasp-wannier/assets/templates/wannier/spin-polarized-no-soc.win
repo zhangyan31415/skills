@@ -3,6 +3,7 @@
 num_wann = {{num_wann}}
 ! num_bands = confirm per spin channel
 num_iter = 200
+iprint = 3
 begin projections
 {{projections_block}}
 end projections

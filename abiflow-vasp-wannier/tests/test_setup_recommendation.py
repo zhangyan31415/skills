@@ -59,6 +59,7 @@ def test_entangled_metal_recommendation_contains_window_logic():
     assert rec["disentanglement_reasoning"]
     assert rec["window_strategy"] in {"moderate", "broad"}
     assert rec["numeric_window_recommendation"] is not None
+    assert "iprint = 3" in rec["minimal_win_fields"]
     assert any("dis_win_" in field for field in rec["minimal_win_fields"])
     assert any("dis_froz_" in field for field in rec["minimal_win_fields"])
     assert rec["recommended_vasp_band_settings"]["nelm_value"] != 1
