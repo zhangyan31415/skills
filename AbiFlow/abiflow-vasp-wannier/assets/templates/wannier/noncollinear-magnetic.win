@@ -1,0 +1,11 @@
+! AbiFlow noncollinear-magnetic skeleton
+{{assumption_lines}}
+num_wann = {{num_wann}}
+! num_bands = confirm against the noncollinear/spinor-aware interface handoff
+num_iter = 200
+spinors = true
+begin projections
+{{projections_block}}
+end projections
+{{window_block}}
+{{version_comment}}

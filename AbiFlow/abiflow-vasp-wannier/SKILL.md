@@ -26,7 +26,7 @@ Do not use this skill to guess exact launch commands when the user has not provi
 1. Define the target: material/system, target orbitals, target bands, and whether SOC, magnetism, or entanglement matter.
 2. Resolve runtime facts in this order: explicit facts in the current message, then external `user-profile.toml`, then unknown.
 3. Read [`references/workflow-overview.md`](references/workflow-overview.md) first.
-4. For setup questions, classify the case, resolve runtime and version facts, choose the cookbook path, then emit a concrete first-pass setup, guardrails, validation plan, and first revisions.
+4. For setup questions, classify the case, resolve runtime and version facts, determine support tiers, choose the cookbook path, then emit a concrete first-pass setup, draft-template notes, guardrails, validation plan, and ranked first revisions.
 5. If the input contains explicit version strings, raw error text, or a VASP/Wannier compatibility question, prioritize [`references/official-sources.md`](references/official-sources.md) and the relevant official-source topics before summarizing with local references.
 6. Debug requests must go through triage in this order: stage, symptoms, likely causes, next checks, then official lookup mode.
 7. Load exactly one recipe from `references/recipes/` when the case matches a known pattern.
@@ -37,7 +37,7 @@ Do not use this skill to guess exact launch commands when the user has not provi
 9. Load deeper topic references only for the active question:
    - VASP setup: [`references/vasp/relax-scf-bands.md`](references/vasp/relax-scf-bands.md), [`references/vasp/incar-knobs.md`](references/vasp/incar-knobs.md)
    - VASP orbital evidence: [`references/vasp/procar-analysis.md`](references/vasp/procar-analysis.md)
-   - Setup cookbook and tables: `references/wannier/cookbook/`, [`references/wannier/parameter-decision-table.md`](references/wannier/parameter-decision-table.md), [`references/wannier/minimal-win-template-fields.md`](references/wannier/minimal-win-template-fields.md), [`references/vasp/interface-handoff.md`](references/vasp/interface-handoff.md), [`references/wannier/revision-playbook.md`](references/wannier/revision-playbook.md)
+   - Setup cookbook and tables: `references/wannier/cookbook/`, [`references/wannier/parameter-decision-table.md`](references/wannier/parameter-decision-table.md), [`references/wannier/minimal-win-template-fields.md`](references/wannier/minimal-win-template-fields.md), [`references/wannier/num-wann-counting.md`](references/wannier/num-wann-counting.md), [`references/vasp/interface-handoff.md`](references/vasp/interface-handoff.md), [`references/wannier/revision-playbook.md`](references/wannier/revision-playbook.md)
    - Debug flow: [`references/debug/routing-taxonomy.md`](references/debug/routing-taxonomy.md), `references/debug/`
    - Wannier setup and diagnosis: [`references/wannier/projection-strategy.md`](references/wannier/projection-strategy.md), [`references/wannier/windows-and-disentanglement.md`](references/wannier/windows-and-disentanglement.md), [`references/wannier/poor-construction-analysis.md`](references/wannier/poor-construction-analysis.md), [`references/wannier/validation.md`](references/wannier/validation.md)
 10. If `PROCAR` is available and projection-family choice is still ambiguous, use it to rank plausible orbital families before changing windows.
@@ -46,15 +46,17 @@ Do not use this skill to guess exact launch commands when the user has not provi
 
 ## Output Contract
 
-For setup questions, respond in seven parts:
+For setup questions, respond in nine parts:
 
 1. `Known facts`
 2. `Assumptions`
 3. `Case classification`
-4. `First-pass setup`
-5. `Guardrails`
-6. `Validation`
-7. `First revisions if poor`
+4. `Support tiers`
+5. `First-pass setup`
+6. `Draft template notes`
+7. `Guardrails`
+8. `Validation`
+9. `Ranked first revisions`
 
 If both combination and single-software cautions apply, surface the cross-software combination guardrails first.
 
@@ -69,6 +71,7 @@ Stop and ask for clarification instead of guessing when:
 - The structure state is ambiguous, for example relaxed vs. unrelaxed or primitive vs. supercell.
 
 If chemistry strongly suggests one or two obvious orbital families, propose them with trade-offs instead of stopping immediately.
+Do not fabricate exact syntax when `syntax_support_tier` is weak or unknown.
 
 ## Bundled Resources
 
@@ -77,7 +80,7 @@ If chemistry strongly suggests one or two obvious orbital families, propose them
 - Profile schema and precedence: [`references/profile-schema.md`](references/profile-schema.md)
 - Scenario recipes: `references/recipes/`
 - Setup helpers: `scripts/classify_wannier_case.py`, `scripts/recommend_wannier_setup.py`, `scripts/draft_win_template.py`
-- Read-only helpers: `scripts/inspect_vasp_run.py`, `scripts/inspect_wannier_run.py`, `scripts/inspect_procar.py`, `scripts/extract_band_window.py`, `scripts/summarize_workflow.py`, `scripts/triage_debug_case.py`
+- Read-only helpers: `scripts/inspect_vasp_run.py`, `scripts/inspect_wannier_run.py`, `scripts/inspect_procar.py`, `scripts/extract_band_window.py`, `scripts/summarize_workflow.py`, `scripts/triage_debug_case.py`, `scripts/revise_setup_after_validation.py`
 
 ## Common Mistakes
 
@@ -86,5 +89,6 @@ If chemistry strongly suggests one or two obvious orbital families, propose them
 - Treating a raw error message like a generic workflow question instead of routing it through triage and official-source rules.
 - Ignoring `PROCAR` when several projection families are plausible and orbital character is the missing evidence.
 - Saying only “tune the windows” without stating what to change first and why.
+- Treating weak or unknown syntax support like strong support.
 - Suggesting exact `module load` or MPI commands without a profile.
 - Treating low spread alone as proof of a good Wannier model without checking interpolation quality.

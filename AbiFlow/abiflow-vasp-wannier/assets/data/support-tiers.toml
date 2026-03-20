@@ -1,0 +1,15 @@
+[strong]
+official_search_mode = "no"
+meaning = "The skill can recommend the workflow or behavior confidently at this layer."
+
+[guarded]
+official_search_mode = "no"
+meaning = "The skill can recommend the workflow, but exact behavior may still depend on the resolved family."
+
+[weak]
+official_search_mode = "preferred"
+meaning = "The skill can still give a physical plan, but exact interface or syntax details should be checked."
+
+[unknown]
+official_search_mode = "required"
+meaning = "The skill must not pretend exact behavior is known."

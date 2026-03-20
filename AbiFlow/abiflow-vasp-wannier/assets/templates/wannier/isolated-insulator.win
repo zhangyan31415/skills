@@ -1,0 +1,10 @@
+! AbiFlow isolated-insulator skeleton
+{{assumption_lines}}
+num_wann = {{num_wann}}
+! num_bands = confirm against the VASP-to-Wannier handoff
+num_iter = 200
+{{spinors_line}}
+begin projections
+{{projections_block}}
+end projections
+{{version_comment}}

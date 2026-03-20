@@ -1,0 +1,10 @@
+! AbiFlow spin-polarized-no-soc skeleton
+{{assumption_lines}}
+num_wann = {{num_wann}}
+! num_bands = confirm per spin channel
+num_iter = 200
+begin projections
+{{projections_block}}
+end projections
+{{window_block}}
+{{version_comment}}

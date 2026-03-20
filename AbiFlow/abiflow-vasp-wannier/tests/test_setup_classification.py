@@ -60,3 +60,18 @@ def test_classify_noncollinear_magnetic_case():
     )
 
     assert report["case_id"] == "noncollinear_magnetic"
+
+
+def test_classify_mixed_orbital_manifold_case_and_support_tiers():
+    report = classify_wannier_case(
+        ROOT,
+        _load_case("mixed-orbital-manifold.json"),
+        vasp_version="6.4.2",
+        wannier_version="3.1.0",
+    )
+
+    assert report["case_id"] == "mixed_orbital_manifold"
+    assert report["case_label"] == "Mixed-Orbital Manifold"
+    assert report["physics_support_tier"] == "strong"
+    assert report["interface_support_tier"] in {"guarded", "strong"}
+    assert report["syntax_support_tier"] in {"guarded", "weak"}

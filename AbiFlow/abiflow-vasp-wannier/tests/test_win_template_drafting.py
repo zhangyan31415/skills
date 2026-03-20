@@ -58,3 +58,16 @@ def test_spinor_template_is_not_scalar():
 
     assert "spinors = true" in template
     assert "num_wann = 6" in template
+
+
+def test_template_marks_assumptions_when_facts_are_missing():
+    rec = recommend_wannier_setup(
+        ROOT,
+        _load_case("mixed-orbital-manifold.json"),
+        vasp_version="6.4.2",
+        wannier_version="3.1.0",
+    )
+
+    template = draft_win_template(rec)
+
+    assert "! Assumption:" in template
