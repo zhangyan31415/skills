@@ -1,0 +1,39 @@
+[common]
+icharg = 11
+nelm_value = 60
+nelm_mode = "leave_default_maximum"
+nelm_reasoning = "For a standard first-pass non-selfconsistent band step from a trusted CHGCAR, use ICHARG=11 and do not mechanically force NELM=1. NELM=1 is reserved for explicit one-step post-processing contexts, not the generic first band run."
+precision_profile = "moderate_first_pass"
+prec_value = "Normal"
+precision_reasoning = "Use moderate precision first. Do not jump to very high precision unless small splittings, symmetry-sensitive crossings, or failed validation prove it is necessary."
+
+[isolated_insulator]
+symmetry_mode = "keep_on_initially"
+isym_value = 2
+symmetry_reasoning = "For a simple nonmagnetic isolated manifold, keep symmetry on for the first pass if the observable and path are symmetry-safe."
+
+[entangled_metal]
+symmetry_mode = "guarded"
+isym_value = 2
+fallback_isym_value = 0
+symmetry_reasoning = "An entangled metallic manifold can start with symmetry, but if crossings or orbital character are sensitive, retry with ISYM=0 before over-tuning windows."
+
+[spin_polarized_no_soc]
+symmetry_mode = "guarded"
+isym_value = 0
+symmetry_reasoning = "For spin-polarized setups, prefer caution: magnetic order and spin-resolved character can make aggressive symmetry reduction misleading."
+
+[soc_spinor]
+symmetry_mode = "disable"
+isym_value = 0
+symmetry_reasoning = "For SOC/spinor band steps, disable symmetry by default unless you have strong evidence the symmetry treatment preserves the target spinor physics."
+
+[noncollinear_magnetic]
+symmetry_mode = "disable"
+isym_value = 0
+symmetry_reasoning = "For noncollinear or symmetry-lowered magnetic cases, disable symmetry for the first band step."
+
+[mixed_orbital_manifold]
+symmetry_mode = "guarded"
+isym_value = 0
+symmetry_reasoning = "When multiple orbital families compete, prefer the safer symmetry-off path if symmetry reduction could hide the orbital evidence you need."
