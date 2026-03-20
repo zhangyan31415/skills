@@ -7,6 +7,7 @@ Use this recipe when the target bands are isolated and the projection chemistry 
 1. Confirm the system is insulating in the relevant k-range.
 2. Prefer chemically obvious localized projections that span the target valence or valence-plus-conduction subspace.
 3. Keep the Wannier setup simple first; do not jump to disentanglement unless the bands actually overlap.
+4. Keep VASP inputs lean, use `LREAL = .FALSE.`, and use `ISYM = 2` for both SCF and non-SCF steps unless the user introduces SOC or another symmetry-breaking requirement.
 
 ## Guardrails
 
