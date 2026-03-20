@@ -13,7 +13,7 @@
 - Separate relaxation, static SCF, and band/path calculations in the reasoning, even if the user later combines them in practice.
 - If the user asks for exact input tags, read `vasp/relax-scf-bands.md` and `vasp/incar-knobs.md`.
 - If the user gives a raw VASP error or incomplete export symptoms, enter the debug flow and classify the stage before suggesting fixes.
-- For the first band step, be conservative: standard fixed-charge band logic, no reflexive `NELM=1`, moderate precision, and symmetry only when safe for the target physics.
+- For the first band step, be conservative: standard fixed-charge band logic, no reflexive `NELM=1`, moderate precision, `LREAL = .FALSE.`, lean `INCAR` choices, and symmetry only when safe for the target physics.
 
 ## Checkpoint 3: Define the Wannier target
 

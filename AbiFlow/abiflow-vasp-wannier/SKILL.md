@@ -45,6 +45,18 @@ Do not use this skill to guess exact launch commands when the user has not provi
 11. Route poor Wannier quality issues such as bad interpolation, unstable windows, or wrong orbital character to [`references/wannier/poor-construction-analysis.md`](references/wannier/poor-construction-analysis.md), not only to generic validation.
 12. When the user provides output files, prefer the bundled read-only scripts before manually interpreting large files.
 
+## User Workflow Overrides
+
+Apply these defaults whenever they do not conflict with an explicit user request for a specific run:
+
+- For self-consistent VASP runs, set `ISYM = 2`.
+- For non-SCF runs without SOC, including band-structure and Wannier-interface steps, set `ISYM = 2`.
+- For SOC-enabled non-SCF, band-structure, and Wannier-interface runs, set `ISYM = -1`.
+- For VASP calculations in this workflow, set `LREAL = .FALSE.` unless the user explicitly asks otherwise.
+- Keep `INCAR` inputs lean; do not add parameters unless they are needed for the target physics, interface handoff, convergence, or a user-stated requirement.
+- For band-path calculations, use 20 points per path segment unless the user specifies otherwise.
+- For the Wannier-interface VASP step, write `WAVECAR` and read it back with `ISTART = 1`.
+
 ## Output Contract
 
 For setup questions, respond in nine parts:
@@ -91,6 +103,8 @@ Do not fabricate exact syntax when `syntax_support_tier` is weak or unknown.
 - Ignoring `PROCAR` when several projection families are plausible and orbital character is the missing evidence.
 - Writing `NELM=1` as a generic first-pass band-step default.
 - Leaving symmetry on by reflex when the target physics is SOC-sensitive, noncollinear, or symmetry-lowered.
+- Using `LREAL = Auto` or `LREAL = .TRUE.` by habit in this workflow when the run is intended for reliable Wannier handoff.
+- Padding `INCAR` with convenience flags that do not materially serve the target physics or the VASP-to-Wannier interface.
 - Saying only “tune the windows” without stating what to change first and why.
 - Treating weak or unknown syntax support like strong support.
 - Suggesting exact `module load` or MPI commands without a profile.
