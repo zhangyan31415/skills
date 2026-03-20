@@ -1,0 +1,1 @@
+How should I choose initial projections for a bulk Si valence-only Wannierization workflow?

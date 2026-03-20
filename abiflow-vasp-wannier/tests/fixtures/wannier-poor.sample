@@ -1,0 +1,7 @@
+ Final State
+ WF centre and spread    1  ( 0.000000, 0.000000, 0.000000 )     1.210
+ WF centre and spread    2  ( 0.250000, 0.250000, 0.250000 )     1.380
+ Omega Total =    2.590
+ Interpolated bands miss the intended crossing near K even though the spreads stay modest.
+ Slightly changing the frozen window causes severe instability.
+ Orbital character leaks into unwanted pz states.

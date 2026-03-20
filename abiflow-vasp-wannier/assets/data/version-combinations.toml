@@ -1,0 +1,47 @@
+[vasp54_wannier3x]
+vasp_family = "VASP 5.4 family"
+vasp_prefixes = ["5.4"]
+wannier_family = "Wannier90 3.x family"
+wannier_prefixes = ["3.0", "3.1"]
+risk_level = "legacy-interface-high"
+symptoms = ["legacy_interface_files", "modern_template_mismatch"]
+guardrails = [
+  "Treat this pair as a legacy-first interface stack and verify what VASP actually exports before assuming a modern template.",
+  "Check official interface notes before debugging missing or mismatched AMN/MMN/EIG expectations by trial and error."
+]
+official_lookup_topics = [
+  "VASP 5.4 Wannier90 interface files",
+  "Wannier90 3.x VASP interface expectations"
+]
+
+[vasp63_64_wannier30_31]
+vasp_family = "VASP 6.3/6.4 family"
+vasp_prefixes = ["6.3", "6.4"]
+wannier_family = "Wannier90 3.0/3.1 family"
+wannier_prefixes = ["3.0", "3.1"]
+risk_level = "modern-interface-medium"
+symptoms = ["site_dependent_interface_behavior", "hdf5_assumption_risk"]
+guardrails = [
+  "Treat this pair as a modern stack, but keep site build details separate from version assumptions.",
+  "Do not infer HDF5 or interface-file availability from the version pair alone."
+]
+official_lookup_topics = [
+  "VASP 6.4 Wannier90 interface hdf5",
+  "Wannier90 3.1 VASP interface release notes"
+]
+
+[template_assumption_older_wannier]
+vasp_family = "Any supported VASP family"
+vasp_prefixes = ["5.4", "6.3", "6.4"]
+wannier_family = "Wannier90 2.1 family"
+wannier_prefixes = ["2.1"]
+risk_level = "template-assumption-medium"
+symptoms = ["older_default_behavior", "newer_template_assumption"]
+guardrails = [
+  "Do not copy a newer template into an older-Wannier workflow without checking which defaults changed.",
+  "When template behavior and observed behavior disagree, check release documentation before debugging by folklore."
+]
+official_lookup_topics = [
+  "Wannier90 2.1 release defaults",
+  "Wannier90 newer template assumptions"
+]
