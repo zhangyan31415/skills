@@ -1,0 +1,15 @@
+{
+  "system_name": "simple bulk semiconductor",
+  "target_observable": "valence-band interpolation",
+  "metallic": false,
+  "entangled": false,
+  "spin_polarized": false,
+  "soc": false,
+  "noncollinear": false,
+  "magnetic": false,
+  "target_orbitals": ["sp3 valence manifold"],
+  "candidate_orbital_families": ["sp3_valence"],
+  "target_orbital_count": 4,
+  "chemistry_hint": "tetrahedral sp3 semiconductor",
+  "band_gap_known": true
+}

@@ -1,0 +1,65 @@
+[isolated_insulator]
+num_wann_mode = "target_orbital_count"
+disentanglement = "no"
+window_strategy = "omit"
+dis_froz_policy = "omit for a clean isolated manifold"
+dis_win_policy = "omit unless later evidence shows the case is actually entangled"
+energy_reference = "valence_top_or_target_gap"
+required_vasp_outputs = ["converged SCF baseline", "band energies covering the target manifold", "confirmed interface handoff files for the resolved version family"]
+validation_checks = ["compare interpolated and reference bands in the target window", "check whether the orbital character matches the intended valence manifold", "confirm spreads are chemically reasonable"]
+first_revision_actions = ["check whether the target manifold is actually isolated", "expand the projection family before adding disentanglement", "only then revisit num_wann if the manifold is incomplete"]
+
+[entangled_metal]
+num_wann_mode = "target_orbital_count"
+disentanglement = "yes"
+window_strategy = "moderate"
+dis_froz_policy = "protect only the physically essential manifold near E_F first"
+dis_win_policy = "include the nearest hybridizing bands but avoid swallowing unrelated bands"
+energy_reference = "fermi_level"
+required_vasp_outputs = ["converged SCF baseline", "bands or eigenvalues covering the target manifold around E_F", "confirmed interface handoff files for the resolved version family"]
+validation_checks = ["compare crossings near E_F", "check whether the target bands stay attached to the intended orbital character", "inspect whether frozen-window changes destabilize the selected subspace"]
+first_revision_actions = ["adjust the projection family first", "tighten the frozen window before broadening the outer window", "reconsider the target manifold if crossings remain wrong"]
+
+[spin_polarized_no_soc]
+num_wann_mode = "target_orbital_count"
+disentanglement = "conditional"
+window_strategy = "narrow"
+dis_froz_policy = "keep the protected window tied to the physically relevant states in each spin channel"
+dis_win_policy = "only broaden when the scalar manifold is still entangled"
+energy_reference = "spin_channel_reference"
+required_vasp_outputs = ["converged spin-polarized baseline", "spin-resolved bands for the target manifold", "confirmed interface handoff files for the resolved version family"]
+validation_checks = ["compare majority/minority interpolation separately", "check that the chosen manifold does not mix the wrong spin channel", "verify that the orbital character is stable across the target window"]
+first_revision_actions = ["check whether channels should stay separate or become a spinor model", "adjust projections per spin channel", "then revisit disentanglement if needed"]
+
+[soc_spinor]
+num_wann_mode = "double_target_orbital_count"
+disentanglement = "conditional"
+window_strategy = "narrow"
+dis_froz_policy = "protect the SOC-split target manifold first"
+dis_win_policy = "broaden only enough to capture nearby hybridizing spinor states"
+energy_reference = "fermi_level_or_target_split"
+required_vasp_outputs = ["converged SOC baseline", "bands covering the SOC-split target manifold", "confirmed interface handoff files for the resolved version family"]
+validation_checks = ["check that the spinor splitting is preserved", "compare interpolated and reference bands around the SOC-driven features", "verify that the manifold does not collapse into a scalar-like draft"]
+first_revision_actions = ["check whether the spinor target manifold is complete", "adjust spinor-compatible projections", "then revisit the frozen and outer windows"]
+
+[noncollinear_magnetic]
+num_wann_mode = "double_target_orbital_count"
+disentanglement = "conditional"
+window_strategy = "moderate"
+dis_froz_policy = "protect the magnetically relevant manifold before adding extra hybridizing states"
+dis_win_policy = "include only the nearest states needed to keep the symmetry-lowered manifold connected"
+energy_reference = "fermi_level_or_magnetic_window"
+required_vasp_outputs = ["converged noncollinear magnetic baseline", "bands covering the magnetically split target manifold", "confirmed interface handoff files for the resolved version family"]
+validation_checks = ["check that the magnetic splitting pattern survives interpolation", "verify that orbital character remains attached to the intended magnetic manifold", "inspect whether slight window changes destabilize the spinor subspace"]
+first_revision_actions = ["tighten the magnetic target manifold definition", "check projection robustness before touching optimizer knobs", "then revisit windows if the manifold is still unstable"]
+
+[mixed_orbital_manifold]
+num_wann_mode = "candidate_default"
+disentanglement = "conditional"
+window_strategy = "moderate"
+dis_froz_policy = "protect the smallest physically complete manifold first"
+dis_win_policy = "broaden only after choosing which candidate family best serves the target observable"
+energy_reference = "observable_dependent"
+required_vasp_outputs = ["converged SCF baseline", "bands covering every plausible candidate manifold", "confirmed interface handoff files for the resolved version family"]
+validation_checks = ["compare at least two candidate manifolds against the target observable", "check whether orbital leakage is caused by an undersized manifold", "verify crossings and character before preferring the smaller candidate"]
+first_revision_actions = ["compare candidate projection families explicitly", "promote to a richer manifold before adding ad hoc windows", "only then revisit num_wann or disentanglement"]

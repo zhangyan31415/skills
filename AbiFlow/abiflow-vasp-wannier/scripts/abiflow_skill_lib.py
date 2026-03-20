@@ -273,6 +273,58 @@ def inspect_wannier_text(text: str) -> Dict[str, Any]:
     }
 
 
+def inspect_procar_text(text: str) -> Dict[str, Any]:
+    headers: List[str] = []
+    family_totals: Dict[str, float] = {"s": 0.0, "p": 0.0, "d": 0.0, "f": 0.0}
+    found_tot_line = False
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        lowered = line.lower()
+        if lowered.startswith("ion") and "tot" in lowered:
+            headers = line.split()[1:-1]
+            continue
+        if lowered.startswith("tot") and headers:
+            found_tot_line = True
+            values = line.split()[1:-1]
+            for header, raw_value in zip(headers, values):
+                try:
+                    value = float(raw_value)
+                except ValueError:
+                    continue
+                family = _orbital_family_from_label(header)
+                if family:
+                    family_totals[family] += value
+
+    total_weight = sum(family_totals.values())
+    if not found_tot_line or total_weight <= 0:
+        return {
+            "source": "PROCAR",
+            "family_weights": {},
+            "dominant_families": [],
+        }
+
+    normalized = {
+        family: round(value / total_weight, 4)
+        for family, value in family_totals.items()
+        if value > 0
+    }
+    dominant = [
+        {"family": family, "weight": weight}
+        for family, weight in sorted(normalized.items(), key=lambda item: item[1], reverse=True)
+    ]
+    if {"d", "p"}.issubset(normalized.keys()) and normalized["d"] >= 0.35 and normalized["p"] >= 0.2:
+        dominant.insert(0, {"family": "d+p", "weight": round(normalized["d"] + normalized["p"], 4)})
+
+    return {
+        "source": "PROCAR",
+        "family_weights": normalized,
+        "dominant_families": dominant,
+    }
+
+
 def parse_energy_list(text: str) -> List[float]:
     values: List[float] = []
     for raw_line in text.splitlines():
@@ -755,6 +807,485 @@ def summarize_workflow_context(
         "debug_stage": triage_report["stage"] if triage_report is not None else None,
         "debug_report": triage_report,
     }
+
+
+def _load_named_sections(data_path: Path) -> List[Dict[str, Any]]:
+    raw = _loads_toml(Path(data_path).read_text())
+    entries: List[Dict[str, Any]] = []
+    for key, value in raw.items():
+        if not isinstance(value, dict):
+            continue
+        entry = {"id": key}
+        entry.update(value)
+        entries.append(entry)
+    return entries
+
+
+def _load_case_taxonomy(skill_root: Path) -> Dict[str, Dict[str, Any]]:
+    raw = _loads_toml((skill_root / "assets" / "data" / "case-taxonomy.toml").read_text())
+    return {key: value for key, value in raw.items() if isinstance(value, dict)}
+
+
+def _load_projection_presets(skill_root: Path) -> Dict[str, Dict[str, Any]]:
+    raw = _loads_toml((skill_root / "assets" / "data" / "projection-presets.toml").read_text())
+    return {key: value for key, value in raw.items() if isinstance(value, dict)}
+
+
+def _load_parameter_rules(skill_root: Path) -> Dict[str, Dict[str, Any]]:
+    raw = _loads_toml((skill_root / "assets" / "data" / "parameter-rules.toml").read_text())
+    return {key: value for key, value in raw.items() if isinstance(value, dict)}
+
+
+def _load_version_family_map(skill_root: Path) -> List[Dict[str, Any]]:
+    return _load_named_sections(skill_root / "assets" / "data" / "version-family-map.toml")
+
+
+def _facts_list(facts: Dict[str, Any], key: str) -> List[str]:
+    value = facts.get(key)
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value]
+    return [str(value)]
+
+
+def _resolve_version_family(skill_root: Path, version: Optional[str], kind: str) -> Dict[str, Any]:
+    if not version:
+        return {
+            "id": f"unspecified_{kind}",
+            "kind": kind,
+            "family_label": f"Unspecified {kind} family",
+            "support_level": "unspecified",
+            "physical_setup_support": "generic",
+            "interface_behavior_support": "unknown",
+            "default_official_search_mode": "no",
+            "matched": False,
+        }
+
+    candidates = [entry for entry in _load_version_family_map(skill_root) if entry.get("kind") == kind]
+    matches = []
+    for entry in candidates:
+        prefixes = entry.get("prefixes", [])
+        if isinstance(prefixes, list) and _matches_version_prefixes(version, prefixes):
+            normalized = copy.deepcopy(entry)
+            normalized["matched"] = True
+            normalized["match_score"] = max(len(prefix) for prefix in prefixes)
+            matches.append(normalized)
+
+    if not matches:
+        return {
+            "id": f"unsupported_{kind}",
+            "kind": kind,
+            "family_label": f"Unsupported {kind} family",
+            "support_level": "unsupported",
+            "physical_setup_support": "generic",
+            "interface_behavior_support": "unknown",
+            "default_official_search_mode": "required",
+            "matched": False,
+            "version": version,
+        }
+
+    return max(matches, key=lambda entry: entry["match_score"])
+
+
+def _setup_refs(skill_root: Path, case_id: str) -> List[str]:
+    taxonomy = _load_case_taxonomy(skill_root)
+    cookbook = taxonomy.get(case_id, {}).get("cookbook")
+    refs = [
+        _ref(skill_root, "references/wannier/parameter-decision-table.md"),
+        _ref(skill_root, "references/wannier/minimal-win-template-fields.md"),
+        _ref(skill_root, "references/vasp/interface-handoff.md"),
+        _ref(skill_root, "references/wannier/revision-playbook.md"),
+        _ref(skill_root, "references/vasp/procar-analysis.md"),
+    ]
+    if isinstance(cookbook, str):
+        refs.insert(0, _ref(skill_root, cookbook))
+    return refs
+
+
+def classify_wannier_case(
+    skill_root: Path,
+    facts: Dict[str, Any],
+    *,
+    vasp_version: Optional[str] = None,
+    wannier_version: Optional[str] = None,
+) -> Dict[str, Any]:
+    candidate_families = _facts_list(facts, "candidate_orbital_families")
+    has_explicit_target = bool(_facts_list(facts, "target_orbitals"))
+    mixed_orbital_competition = bool(facts.get("mixed_orbital_competition")) or (
+        len(candidate_families) > 1 and not has_explicit_target
+    )
+
+    if facts.get("noncollinear") or (facts.get("magnetic") and facts.get("symmetry_lowered")):
+        case_id = "noncollinear_magnetic"
+        confidence = 0.98
+    elif facts.get("soc") or facts.get("spinors"):
+        case_id = "soc_spinor"
+        confidence = 0.96
+    elif mixed_orbital_competition:
+        case_id = "mixed_orbital_manifold"
+        confidence = 0.82
+    elif facts.get("metallic") or facts.get("entangled"):
+        case_id = "entangled_metal"
+        confidence = 0.93
+    elif facts.get("spin_polarized") and not facts.get("soc"):
+        case_id = "spin_polarized_no_soc"
+        confidence = 0.92
+    else:
+        case_id = "isolated_insulator"
+        confidence = 0.9 if facts.get("band_gap_known") else 0.78
+
+    taxonomy = _load_case_taxonomy(skill_root)
+    case_entry = taxonomy.get(case_id, {})
+    required_missing_facts = [
+        field
+        for field in case_entry.get("required_facts", [])
+        if not facts.get(field)
+    ]
+
+    assumptions = list(case_entry.get("fallback_assumptions", []))
+    if not has_explicit_target and candidate_families:
+        assumptions.append(
+            f"Using {candidate_families[0]} as the first-pass target family because chemistry suggests it is plausible."
+        )
+    if not facts.get("target_orbital_count") and candidate_families:
+        assumptions.append("Using the first projection preset count as the first-pass num_wann estimate.")
+    if vasp_version or wannier_version:
+        assumptions.append("Version-family guardrails will modify interface expectations without changing the physical setup logic.")
+
+    return {
+        "case_id": case_id,
+        "assumptions": assumptions,
+        "confidence": round(confidence, 2),
+        "required_missing_facts": required_missing_facts,
+        "recommended_refs": _setup_refs(skill_root, case_id),
+    }
+
+
+def _candidate_family_ids(skill_root: Path, case_id: str, facts: Dict[str, Any]) -> List[str]:
+    candidate_families = _facts_list(facts, "candidate_orbital_families")
+    if candidate_families:
+        return candidate_families
+    return list(_load_case_taxonomy(skill_root).get(case_id, {}).get("default_projection_families", []))
+
+
+def _base_orbital_count(facts: Dict[str, Any], preset: Dict[str, Any], *, prefer_facts: bool = True) -> int:
+    if prefer_facts and facts.get("target_orbital_count"):
+        return int(facts["target_orbital_count"])
+    return int(preset.get("base_orbital_count", 0))
+
+
+def _compute_num_wann(
+    case_id: str,
+    facts: Dict[str, Any],
+    preset: Dict[str, Any],
+    rule: Dict[str, Any],
+    *,
+    prefer_facts: bool = True,
+) -> int:
+    mode = rule.get("num_wann_mode")
+    base = _base_orbital_count(facts, preset, prefer_facts=prefer_facts)
+    if mode == "double_target_orbital_count":
+        return max(1, base * 2)
+    if mode == "candidate_default":
+        return max(1, int(preset.get("base_orbital_count", base or 1)))
+    return max(1, base or int(preset.get("base_orbital_count", 1)))
+
+
+def _projection_candidates(
+    skill_root: Path,
+    case_id: str,
+    facts: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    presets = _load_projection_presets(skill_root)
+    rules = _load_parameter_rules(skill_root)
+    rule = rules.get(case_id, {})
+    candidates: List[Dict[str, Any]] = []
+    family_ids = _candidate_family_ids(skill_root, case_id, facts)
+    primary_family = family_ids[0] if family_ids else None
+    for family_id in family_ids:
+        preset = presets.get(family_id)
+        if preset is None:
+            continue
+        candidates.append(
+            {
+                "id": family_id,
+                "label": preset.get("label", family_id),
+                "rationale": preset.get("rationale", ""),
+                "num_wann": _compute_num_wann(
+                    case_id,
+                    facts,
+                    preset,
+                    rule,
+                    prefer_facts=family_id == primary_family,
+                ),
+                "projections": list(preset.get("projections", [])),
+                "tradeoff": preset.get("tradeoff", ""),
+            }
+        )
+    return candidates
+
+
+def _orbital_family_from_label(label: str) -> Optional[str]:
+    lowered = label.lower()
+    if lowered.startswith("s"):
+        return "s"
+    if lowered.startswith("p"):
+        return "p"
+    if lowered.startswith("d"):
+        return "d"
+    if lowered.startswith("f"):
+        return "f"
+    return None
+
+
+def _rank_projection_candidates_by_procar(
+    candidates: List[Dict[str, Any]],
+    skill_root: Path,
+    procar_summary: Optional[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    if not procar_summary or not procar_summary.get("family_weights"):
+        return candidates
+
+    presets = _load_projection_presets(skill_root)
+    weights = procar_summary["family_weights"]
+    scored: List[Dict[str, Any]] = []
+    for index, candidate in enumerate(candidates):
+        preset = presets.get(candidate["id"], {})
+        families = preset.get("orbital_families", [])
+        if not isinstance(families, list):
+            families = []
+        score = sum(weights.get(family, 0.0) for family in families) - 0.1 * max(0, len(families) - 1)
+        normalized = copy.deepcopy(candidate)
+        normalized["procar_match_score"] = round(score, 4)
+        scored.append((index, normalized))
+
+    return [
+        item[1]
+        for item in sorted(
+            scored,
+            key=lambda item: (item[1]["procar_match_score"], -item[0]),
+            reverse=True,
+        )
+    ]
+
+
+def _window_recommendation(
+    case_id: str,
+    rule: Dict[str, Any],
+    band_energies: Optional[Iterable[float]] = None,
+) -> Dict[str, Any]:
+    strategy = rule.get("window_strategy", "omit")
+    recommendation = {
+        "strategy": strategy,
+        "dis_froz_policy": rule.get("dis_froz_policy", ""),
+        "dis_win_policy": rule.get("dis_win_policy", ""),
+        "energy_reference": rule.get("energy_reference", "fermi_level"),
+        "notes": [],
+    }
+
+    if strategy != "omit" and band_energies:
+        padding = {"narrow": 0.2, "moderate": 0.5, "broad": 1.0}.get(strategy, 0.5)
+        outer = recommend_energy_window(band_energies, fermi=0.0, padding=padding)
+        frozen = recommend_energy_window(band_energies, fermi=0.0, padding=max(0.05, padding / 2.5))
+        recommendation["dis_win_range"] = {"min": outer["min"], "max": outer["max"]}
+        recommendation["dis_froz_range"] = {"min": frozen["min"], "max": frozen["max"]}
+        recommendation["notes"].append("Numeric window hints were derived from the supplied band-energy list.")
+    elif strategy != "omit":
+        recommendation["notes"].append("No band-energy list was supplied, so the window recommendation stays policy-level rather than numeric.")
+    else:
+        recommendation["notes"].append("This first-pass case should start without disentanglement windows.")
+
+    return recommendation
+
+
+def _single_software_version_guardrails(skill_root: Path, vasp_version: Optional[str], wannier_version: Optional[str]) -> Dict[str, List[str]]:
+    return {
+        "vasp": collect_guardrails(skill_root / "references" / "vasp" / "version-matrix.md", vasp_version),
+        "wannier90": collect_guardrails(skill_root / "references" / "wannier" / "version-matrix.md", wannier_version),
+    }
+
+
+def _resolve_setup_version_behavior(
+    skill_root: Path,
+    vasp_version: Optional[str],
+    wannier_version: Optional[str],
+) -> Dict[str, Any]:
+    vasp_family = _resolve_version_family(skill_root, vasp_version, "vasp")
+    wannier_family = _resolve_version_family(skill_root, wannier_version, "wannier90")
+    combo_guardrails = collect_version_combination_guardrails(
+        skill_root / "assets" / "data" / "version-combinations.toml",
+        vasp_version,
+        wannier_version,
+    )
+    single_guardrails = _single_software_version_guardrails(skill_root, vasp_version, wannier_version)
+
+    if vasp_family["support_level"] == "unsupported" or wannier_family["support_level"] == "unsupported":
+        official_search_mode = "required"
+        official_search_reason = "unsupported_version_family"
+    elif OFFICIAL_SEARCH_RANK[vasp_family["default_official_search_mode"]] >= 1 or OFFICIAL_SEARCH_RANK[
+        wannier_family["default_official_search_mode"]
+    ] >= 1:
+        official_search_mode = "preferred"
+        official_search_reason = "weak_interface_support"
+    else:
+        official_search_mode = "no"
+        official_search_reason = "supported_version_family"
+
+    if not vasp_version and not wannier_version:
+        official_search_mode = "no"
+        official_search_reason = "physical_setup_version_agnostic"
+
+    return {
+        "vasp_family": vasp_family.get("family_label"),
+        "wannier_family": wannier_family.get("family_label"),
+        "combo_guardrails": combo_guardrails,
+        "single_software_guardrails": single_guardrails,
+        "ordered_guardrails": _ordered_guardrails(combo_guardrails, single_guardrails),
+        "official_search_mode": official_search_mode,
+        "official_search_reason": official_search_reason,
+    }
+
+
+def _target_subspace(case_id: str, facts: Dict[str, Any], primary_candidate: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    count = facts.get("target_orbital_count")
+    return {
+        "description": facts.get("target_observable", "first-pass target manifold"),
+        "target_orbitals": _facts_list(facts, "target_orbitals") or ([primary_candidate["label"]] if primary_candidate else []),
+        "target_orbital_count": count,
+        "selection_logic": {
+            "isolated_insulator": "Use the smallest isolated chemically obvious manifold.",
+            "entangled_metal": "Use the smallest manifold that still preserves the low-energy metallic bands of interest.",
+            "spin_polarized_no_soc": "Keep a scalar orbital manifold per spin channel unless a true spinor model is required.",
+            "soc_spinor": "Build a true spinor manifold that keeps the SOC-split states explicit.",
+            "noncollinear_magnetic": "Build a symmetry-lowered spinor manifold around the magnetic target states.",
+            "mixed_orbital_manifold": "Compare at least two plausible orbital families and start from the smallest physically complete one.",
+        }.get(case_id, "Start from the smallest physically defensible target manifold."),
+    }
+
+
+def _minimal_win_fields(
+    recommendation: Dict[str, Any],
+) -> List[str]:
+    fields = [
+        f"num_wann = {recommendation['num_wann']}",
+        "! num_bands must be consistent with the exported VASP-to-Wannier handoff once the interface path is confirmed",
+        "num_iter = 200",
+    ]
+
+    if recommendation["case_id"] in {"soc_spinor", "noncollinear_magnetic"}:
+        fields.append("spinors = true")
+
+    fields.extend(
+        [
+            "begin projections",
+            *recommendation["projection_candidates"][0]["projections"],
+            "end projections",
+        ]
+    )
+
+    if recommendation["disentanglement_needed"]:
+        window = recommendation["window_recommendation"]
+        if "dis_froz_range" in window and "dis_win_range" in window:
+            fields.extend(
+                [
+                    f"dis_froz_min = {window['dis_froz_range']['min']}",
+                    f"dis_froz_max = {window['dis_froz_range']['max']}",
+                    f"dis_win_min = {window['dis_win_range']['min']}",
+                    f"dis_win_max = {window['dis_win_range']['max']}",
+                ]
+            )
+        else:
+            fields.extend(
+                [
+                    "! dis_froz_min = first-pass lower bound of the protected target manifold",
+                    "! dis_froz_max = first-pass upper bound of the protected target manifold",
+                    "! dis_win_min = include the nearest hybridizing bands below the target manifold",
+                    "! dis_win_max = include the nearest hybridizing bands above the target manifold",
+                ]
+            )
+
+    return fields
+
+
+def recommend_wannier_setup(
+    skill_root: Path,
+    facts: Dict[str, Any],
+    *,
+    vasp_version: Optional[str] = None,
+    wannier_version: Optional[str] = None,
+    band_energies: Optional[Iterable[float]] = None,
+    procar_path: Optional[Path] = None,
+) -> Dict[str, Any]:
+    classification = classify_wannier_case(
+        skill_root,
+        facts,
+        vasp_version=vasp_version,
+        wannier_version=wannier_version,
+    )
+    case_id = classification["case_id"]
+    candidates = _projection_candidates(skill_root, case_id, facts)
+    procar_summary = inspect_procar_text(procar_path.read_text()) if procar_path is not None else None
+    candidates = _rank_projection_candidates_by_procar(candidates, skill_root, procar_summary)
+    rules = _load_parameter_rules(skill_root)
+    rule = rules.get(case_id, {})
+    primary_candidate = candidates[0] if candidates else None
+    num_wann = primary_candidate["num_wann"] if primary_candidate else max(1, int(facts.get("target_orbital_count", 1)))
+    disentanglement_rule = rule.get("disentanglement", "conditional")
+    disentanglement_needed = disentanglement_rule == "yes" or (
+        disentanglement_rule == "conditional" and bool(facts.get("metallic") or facts.get("entangled"))
+    )
+    window = _window_recommendation(case_id, rule, band_energies if band_energies is not None else None)
+    version_guardrails = _resolve_setup_version_behavior(skill_root, vasp_version, wannier_version)
+
+    recommendation = {
+        "case_id": case_id,
+        "assumptions": classification["assumptions"],
+        "target_subspace": _target_subspace(case_id, facts, primary_candidate),
+        "num_wann": num_wann,
+        "projection_candidates": candidates,
+        "disentanglement_needed": disentanglement_needed,
+        "window_recommendation": window,
+        "required_vasp_outputs": list(rule.get("required_vasp_outputs", [])),
+        "validation_checks": list(rule.get("validation_checks", [])),
+        "first_revision_actions": list(rule.get("first_revision_actions", [])),
+        "version_guardrails": version_guardrails,
+        "official_search_mode": version_guardrails["official_search_mode"],
+        "official_search_reason": version_guardrails["official_search_reason"],
+    }
+    if procar_summary is not None:
+        recommendation["procar_summary"] = procar_summary
+    recommendation["minimal_win_fields"] = _minimal_win_fields(recommendation)
+    return recommendation
+
+
+def draft_win_template(recommendation: Dict[str, Any], overrides: Optional[Dict[str, str]] = None) -> str:
+    overrides = overrides or {}
+    lines = [
+        "! First-pass wannier90.win generated by AbiFlow",
+        f"! Case: {recommendation['case_id']}",
+    ]
+    for assumption in recommendation.get("assumptions", []):
+        lines.append(f"! Assumption: {assumption}")
+    if recommendation.get("official_search_mode") != "no":
+        lines.append(
+            f"! Version note: {recommendation['official_search_mode']} official lookup for exact interface behavior ({recommendation['official_search_reason']})."
+        )
+
+    for raw_line in recommendation.get("minimal_win_fields", []):
+        line = raw_line
+        if "=" in raw_line and not raw_line.lstrip().startswith("!"):
+            key = raw_line.split("=", 1)[0].strip()
+            if key in overrides:
+                line = f"{key} = {overrides[key]}"
+        lines.append(line)
+
+    lines.append("")
+    lines.append("! Validation focus:")
+    for item in recommendation.get("validation_checks", []):
+        lines.append(f"! - {item}")
+
+    return "\n".join(lines) + "\n"
 
 
 def to_json(data: Any) -> str:

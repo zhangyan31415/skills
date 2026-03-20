@@ -1,0 +1,16 @@
+{
+  "system_name": "noncollinear magnetic manifold",
+  "target_observable": "magnetic interpolation near E_F",
+  "metallic": true,
+  "entangled": true,
+  "spin_polarized": true,
+  "soc": false,
+  "noncollinear": true,
+  "magnetic": true,
+  "symmetry_lowered": true,
+  "target_orbitals": ["d manifold"],
+  "candidate_orbital_families": ["full_d_spinor", "d_plus_ligand_p_spinor"],
+  "target_orbital_count": 5,
+  "chemistry_hint": "symmetry-lowered transition-metal magnet",
+  "band_gap_known": false
+}

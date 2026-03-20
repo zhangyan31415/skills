@@ -13,6 +13,7 @@ official_lookup_topics = [
   "VASP 5.4 Wannier90 interface files",
   "Wannier90 3.x VASP interface expectations"
 ]
+setup_note = "Physical setup logic is still the same as a modern workflow, but the interface handoff should be treated as legacy-first."
 
 [vasp63_64_wannier30_31]
 vasp_family = "VASP 6.3/6.4 family"
@@ -29,6 +30,7 @@ official_lookup_topics = [
   "VASP 6.4 Wannier90 interface hdf5",
   "Wannier90 3.1 VASP interface release notes"
 ]
+setup_note = "Physical setup logic is stable across this modern pair; the main caution is site-dependent interface behavior."
 
 [template_assumption_older_wannier]
 vasp_family = "Any supported VASP family"
@@ -45,3 +47,4 @@ official_lookup_topics = [
   "Wannier90 2.1 release defaults",
   "Wannier90 newer template assumptions"
 ]
+setup_note = "Keep the physical setup conservative and verify any template assumptions against the older Wannier defaults."
