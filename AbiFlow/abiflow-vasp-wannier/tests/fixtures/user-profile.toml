@@ -1,0 +1,17 @@
+[software]
+vasp = "6.4.2"
+wannier90 = "3.1.0"
+
+[executables]
+vasp_std = "vasp_std"
+wannier90 = "wannier90.x"
+
+[launcher]
+kind = "slurm"
+mpi = "srun"
+module_load = ["vasp/6.4.2", "wannier90/3.1.0"]
+
+[capabilities]
+soc = true
+noncollinear = true
+spin_polarized = true

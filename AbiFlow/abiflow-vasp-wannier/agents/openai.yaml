@@ -1,0 +1,4 @@
+interface:
+  display_name: "AbiFlow VASP Wannier"
+  short_description: "Plan and check VASP to Wannier90 workflows"
+  default_prompt: "Use $abiflow-vasp-wannier to plan a VASP to Wannier90 workflow, resolve version-sensitive assumptions, and check projection or window choices before I submit jobs."
