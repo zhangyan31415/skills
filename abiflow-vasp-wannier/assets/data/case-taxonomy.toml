@@ -1,4 +1,5 @@
 [isolated_insulator]
+case_label = "Isolated Insulator"
 cookbook = "references/wannier/cookbook/isolated-insulator.md"
 required_facts = ["target_observable", "target_orbital_count"]
 fallback_assumptions = ["Assume an isolated valence manifold if the system is insulating and no clear entanglement is reported."]
@@ -6,6 +7,7 @@ default_projection_families = ["sp3_valence"]
 default_revision_order = ["check target subspace completeness", "check projection family", "only then reconsider whether disentanglement is actually needed"]
 
 [entangled_metal]
+case_label = "Entangled Metal"
 cookbook = "references/wannier/cookbook/entangled-metal.md"
 required_facts = ["target_observable", "target_orbital_count"]
 fallback_assumptions = ["Assume the target manifold is entangled near E_F and protect only the physically essential states first."]
@@ -13,6 +15,7 @@ default_projection_families = ["t2g_d"]
 default_revision_order = ["check projection family", "tighten frozen window", "then widen or narrow the outer window"]
 
 [spin_polarized_no_soc]
+case_label = "Spin-Polarized Without SOC"
 cookbook = "references/wannier/cookbook/spin-polarized-no-soc.md"
 required_facts = ["target_observable", "target_orbital_count"]
 fallback_assumptions = ["Assume separate collinear spin channels unless the workflow explicitly asks for a spinor manifold."]
@@ -20,6 +23,7 @@ default_projection_families = ["spin_polarized_d"]
 default_revision_order = ["check per-spin target manifold", "check projection family", "then revisit window choices"]
 
 [soc_spinor]
+case_label = "SOC Spinor"
 cookbook = "references/wannier/cookbook/soc-spinor.md"
 required_facts = ["target_observable", "target_orbital_count"]
 fallback_assumptions = ["Assume a spinor basis doubles the orbital count when the target manifold is built as a true spinor model."]
@@ -27,6 +31,7 @@ default_projection_families = ["anion_p_spinor"]
 default_revision_order = ["verify spinor target manifold", "check spinor-compatible projections", "then revisit frozen and outer windows"]
 
 [noncollinear_magnetic]
+case_label = "Noncollinear Magnetic"
 cookbook = "references/wannier/cookbook/noncollinear-magnetic.md"
 required_facts = ["target_observable", "target_orbital_count"]
 fallback_assumptions = ["Assume the magnetic manifold is symmetry-lowered and needs a spinor-like basis unless the workflow proves otherwise."]
@@ -34,6 +39,7 @@ default_projection_families = ["full_d_spinor"]
 default_revision_order = ["verify magnetic target manifold", "check projection family robustness", "then revisit windows around the magnetically split manifold"]
 
 [mixed_orbital_manifold]
+case_label = "Mixed-Orbital Manifold"
 cookbook = "references/wannier/cookbook/mixed-orbital-manifold.md"
 required_facts = ["target_observable"]
 fallback_assumptions = ["When multiple orbital families are plausible, start from the smallest physically complete manifold and keep one richer alternative in reserve."]

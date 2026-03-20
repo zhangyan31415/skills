@@ -1,0 +1,14 @@
+{
+  "system_name": "mixed d and p manifold",
+  "target_observable": "orbital-selective low-energy interpolation",
+  "metallic": true,
+  "entangled": true,
+  "spin_polarized": false,
+  "soc": false,
+  "noncollinear": false,
+  "magnetic": false,
+  "candidate_orbital_families": ["t2g_d", "d_plus_ligand_p"],
+  "mixed_orbital_competition": true,
+  "chemistry_hint": "strong d-p hybridization near E_F",
+  "band_gap_known": false
+}

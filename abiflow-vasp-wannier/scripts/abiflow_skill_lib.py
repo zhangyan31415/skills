@@ -1290,3 +1290,110 @@ def draft_win_template(recommendation: Dict[str, Any], overrides: Optional[Dict[
 
 def to_json(data: Any) -> str:
     return json.dumps(data, indent=2, sort_keys=True)
+
+
+from core.routing import route_question as _route_question_core
+from core.version_guardrails import (
+    collect_guardrails as _collect_guardrails_core,
+    collect_version_combination_guardrails as _collect_version_combination_guardrails_core,
+    ordered_guardrails as _ordered_guardrails_core,
+)
+from core.case_classification import classify_wannier_case as _classify_wannier_case_core
+from core.setup_rules import (
+    inspect_procar_text as _inspect_procar_text_core,
+    recommend_wannier_setup as _recommend_wannier_setup_core,
+)
+from core.template_generation import draft_win_template as _draft_win_template_core
+from core.revision_logic import revise_setup_after_validation as _revise_setup_after_validation_core
+
+
+def route_question(
+    question_text: str,
+    *,
+    vasp_version: Optional[str] = None,
+    wannier_version: Optional[str] = None,
+    error_text: Optional[str] = None,
+) -> Dict[str, Any]:
+    return _route_question_core(
+        question_text,
+        vasp_version=vasp_version,
+        wannier_version=wannier_version,
+        error_text=error_text,
+    )
+
+
+def collect_guardrails(matrix_path: Path, version: Optional[str]) -> List[str]:
+    return _collect_guardrails_core(matrix_path, version)
+
+
+def collect_version_combination_guardrails(
+    data_path: Path,
+    vasp_version: Optional[str],
+    wannier_version: Optional[str],
+) -> List[Dict[str, Any]]:
+    return _collect_version_combination_guardrails_core(data_path, vasp_version, wannier_version)
+
+
+def _ordered_guardrails(
+    combo_guardrails: List[Dict[str, Any]],
+    single_software_guardrails: Dict[str, List[str]],
+) -> List[Dict[str, Any]]:
+    return _ordered_guardrails_core(combo_guardrails, single_software_guardrails)
+
+
+def inspect_procar_text(text: str) -> Dict[str, Any]:
+    return _inspect_procar_text_core(text)
+
+
+def classify_wannier_case(
+    skill_root: Path,
+    facts: Dict[str, Any],
+    *,
+    vasp_version: Optional[str] = None,
+    wannier_version: Optional[str] = None,
+) -> Dict[str, Any]:
+    return _classify_wannier_case_core(
+        skill_root,
+        facts,
+        vasp_version=vasp_version,
+        wannier_version=wannier_version,
+    )
+
+
+def recommend_wannier_setup(
+    skill_root: Path,
+    facts: Dict[str, Any],
+    *,
+    vasp_version: Optional[str] = None,
+    wannier_version: Optional[str] = None,
+    band_energies: Optional[Iterable[float]] = None,
+    procar_path: Optional[Path] = None,
+) -> Dict[str, Any]:
+    return _recommend_wannier_setup_core(
+        skill_root,
+        facts,
+        vasp_version=vasp_version,
+        wannier_version=wannier_version,
+        band_energies=band_energies,
+        procar_path=procar_path,
+    )
+
+
+def draft_win_template(recommendation: Dict[str, Any], overrides: Optional[Dict[str, str]] = None) -> str:
+    skill_root = Path(__file__).resolve().parents[1]
+    return _draft_win_template_core(skill_root, recommendation, overrides=overrides)
+
+
+def revise_setup_after_validation(
+    skill_root: Path,
+    recommendation: Dict[str, Any],
+    *,
+    validation_symptoms: Iterable[str],
+    inspected_outputs: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    return _revise_setup_after_validation_core(
+        skill_root,
+        recommendation,
+        validation_symptoms=validation_symptoms,
+        inspected_outputs=inspected_outputs,
+    )

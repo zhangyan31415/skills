@@ -3,33 +3,33 @@ kind = "vasp"
 prefixes = ["5.4"]
 family_label = "VASP 5.4 family"
 support_level = "legacy"
-physical_setup_support = "strong"
-interface_behavior_support = "weak"
-default_official_search_mode = "preferred"
+physics_support_tier = "strong"
+interface_support_tier = "weak"
+syntax_support_tier = "weak"
 
 [vasp_6_3_6_4]
 kind = "vasp"
 prefixes = ["6.3", "6.4"]
 family_label = "VASP 6.3/6.4 family"
 support_level = "modern"
-physical_setup_support = "strong"
-interface_behavior_support = "moderate"
-default_official_search_mode = "no"
+physics_support_tier = "strong"
+interface_support_tier = "guarded"
+syntax_support_tier = "guarded"
 
 [wannier_2_1]
 kind = "wannier90"
 prefixes = ["2.1"]
 family_label = "Wannier90 2.1 family"
 support_level = "legacy"
-physical_setup_support = "moderate"
-interface_behavior_support = "weak"
-default_official_search_mode = "preferred"
+physics_support_tier = "guarded"
+interface_support_tier = "weak"
+syntax_support_tier = "weak"
 
 [wannier_3_0_3_1]
 kind = "wannier90"
 prefixes = ["3.0", "3.1"]
 family_label = "Wannier90 3.0/3.1 family"
 support_level = "modern"
-physical_setup_support = "strong"
-interface_behavior_support = "moderate"
-default_official_search_mode = "no"
+physics_support_tier = "strong"
+interface_support_tier = "guarded"
+syntax_support_tier = "guarded"
