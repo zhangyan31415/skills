@@ -1,0 +1,15 @@
+{
+  "system_name": "SOC-sensitive p-manifold",
+  "target_observable": "spin-orbit split p-manifold interpolation",
+  "metallic": false,
+  "entangled": false,
+  "spin_polarized": false,
+  "soc": true,
+  "noncollinear": false,
+  "magnetic": false,
+  "target_orbitals": ["p manifold"],
+  "candidate_orbital_families": ["anion_p_spinor"],
+  "target_orbital_count": 3,
+  "chemistry_hint": "heavy p-electron manifold",
+  "band_gap_known": true
+}

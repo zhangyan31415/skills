@@ -1,0 +1,15 @@
+{
+  "system_name": "entangled d-band metal",
+  "target_observable": "low-energy t2g transport near E_F",
+  "metallic": true,
+  "entangled": true,
+  "spin_polarized": false,
+  "soc": false,
+  "noncollinear": false,
+  "magnetic": false,
+  "target_orbitals": ["t2g manifold"],
+  "candidate_orbital_families": ["t2g_d", "d_plus_ligand_p"],
+  "target_orbital_count": 3,
+  "chemistry_hint": "transition-metal oxide near the Fermi level",
+  "band_gap_known": false
+}

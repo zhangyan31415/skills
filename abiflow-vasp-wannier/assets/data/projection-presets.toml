@@ -1,0 +1,66 @@
+[sp3_valence]
+label = "sp3 valence manifold"
+rationale = "Use a compact sp3-like valence basis when the chemistry is tetrahedral and the target manifold is isolated."
+tradeoff = "Smallest localized manifold; add antibonding orbitals only if conduction states are part of the target."
+projections = ["species:sp3-like valence orbitals"]
+base_orbital_count = 4
+orbital_families = ["s", "p"]
+
+[t2g_d]
+label = "t2g d manifold"
+rationale = "Use the t2g subset when low-energy transport or correlation physics is centered on the crystal-field-split t2g states."
+tradeoff = "Compact and interpretable, but may miss ligand mixing if the crossings are strongly hybridized."
+projections = ["transition-metal:dxy", "transition-metal:dyz", "transition-metal:dzx"]
+base_orbital_count = 3
+orbital_families = ["d"]
+
+[d_plus_ligand_p]
+label = "d plus ligand-p manifold"
+rationale = "Use a mixed d+p basis when ligand hybridization is too strong for a pure d-only model to interpolate reliably."
+tradeoff = "More robust for hybridized bands, but less minimal and more expensive."
+projections = ["transition-metal:d", "ligand:p"]
+base_orbital_count = 8
+orbital_families = ["d", "p"]
+
+[spin_polarized_d]
+label = "spin-polarized scalar d manifold"
+rationale = "For collinear spin-polarized setups without SOC, keep the orbital manifold scalar and treat spin channels separately unless a joint spinor model is explicitly requested."
+tradeoff = "Keeps num_wann minimal per spin channel, but assumes separate spin treatment."
+projections = ["transition-metal:d"]
+base_orbital_count = 5
+orbital_families = ["d"]
+
+[anion_p_spinor]
+label = "spinor p manifold"
+rationale = "Use a spinor p basis when SOC splits a chemically obvious p-manifold and the target observable depends on the spinor structure."
+tradeoff = "Doubles the orbital count, but keeps the SOC physics explicit."
+projections = ["heavy-species:px", "heavy-species:py", "heavy-species:pz"]
+base_orbital_count = 3
+spinor = true
+orbital_families = ["p"]
+
+[full_d_spinor]
+label = "spinor d manifold"
+rationale = "Use a full spinor d basis for SOC-sensitive or noncollinear magnetic d-manifolds."
+tradeoff = "Most robust for symmetry-lowered d states, but doubles the orbital count."
+projections = ["transition-metal:d"]
+base_orbital_count = 5
+spinor = true
+orbital_families = ["d"]
+
+[d_plus_ligand_p_spinor]
+label = "spinor d plus ligand-p manifold"
+rationale = "Use a richer spinor d+p basis when both SOC or noncollinearity and strong hybridization matter."
+tradeoff = "Most expensive option, but the safest when a smaller manifold loses orbital character."
+projections = ["transition-metal:d", "ligand:p"]
+base_orbital_count = 8
+spinor = true
+orbital_families = ["d", "p"]
+
+[mixed_d_p]
+label = "mixed d and p candidate families"
+rationale = "Use this when multiple plausible manifold families compete and the observable must decide the smallest acceptable model."
+tradeoff = "Requires comparing two concrete candidates rather than pretending the answer is unique."
+projections = ["candidate A: transition-metal:d", "candidate B: transition-metal:d + ligand:p"]
+base_orbital_count = 5
+orbital_families = ["d", "p"]
