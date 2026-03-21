@@ -63,7 +63,10 @@ Apply these defaults whenever they do not conflict with an explicit user request
 - Keep `INCAR` inputs lean; do not add parameters unless they are needed for the target physics, interface handoff, convergence, or a user-stated requirement.
 - For band-path calculations, use 20 points per path segment unless the user specifies otherwise.
 - For the Wannier-interface VASP step, write `WAVECAR` and read it back with `ISTART = 1`.
+- For the first VASP-to-Wannier interface run that generates `mmn`/`amn`/`eig`-style handoff files, if no `WAVECAR` is present, copy in the converged SCF `WAVECAR` and read it with `ISTART = 1`.
+- If the user later changes only the Wannier projections and reruns the VASP-to-Wannier interface step, reuse the `WAVECAR` from the first successful interface run instead of going back to the SCF run.
 - Never set `LWANNIER90_RUN = .TRUE.` in this workflow. Keep Wannier optimization outside VASP in a separate run directory unless the user explicitly overrides this.
+- Do not prewrite `unit_cell_cart` in `wannier90.win` for the VASP-to-Wannier interface path; let VASP add that block from `POSCAR`.
 - For spinor, SOC, or otherwise spin-resolved Wannier projections, always specify the spin channel explicitly with `(u)` and/or `(d)`. Do not leave spin ambiguity implicit in projection lines.
 - For any custom script that overlays `wannier90_band.dat` with VASP band data, parse defensively: skip comment lines and blank lines instead of assuming every line is numeric data.
 - When plotting or comparing Wannier interpolation against VASP bands, explicitly shift the Wannier energies with `fermi_energy` from `wannier90.win` to relative-Fermi coordinates. Do not assume `wannier90_band.dat` is already referenced to the Fermi level.
@@ -121,3 +124,4 @@ Do not fabricate exact syntax when `syntax_support_tier` is weak or unknown.
 - Suggesting exact `module load` or MPI commands without a profile.
 - Treating low spread alone as proof of a good Wannier model without checking interpolation quality.
 - Assuming `wannier90_band.dat` is already in relative-Fermi coordinates without checking `wannier90.win`.
+- Prewriting `unit_cell_cart` in `wannier90.win` for a VASP-driven interface run where VASP will add it from `POSCAR`.

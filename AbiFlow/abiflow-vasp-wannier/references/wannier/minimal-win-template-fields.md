@@ -11,4 +11,5 @@
 ## Template discipline
 
 - Keep the first template minimal and internally consistent.
+- For the VASP interface path, do not prewrite `unit_cell_cart`; let VASP add that block from `POSCAR`.
 - If exact numeric windows are not yet known, write explicit placeholders with the intended physical role instead of inventing precise numbers.
