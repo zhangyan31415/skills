@@ -65,6 +65,8 @@ Apply these defaults whenever they do not conflict with an explicit user request
 - For the Wannier-interface VASP step, write `WAVECAR` and read it back with `ISTART = 1`.
 - Never set `LWANNIER90_RUN = .TRUE.` in this workflow. Keep Wannier optimization outside VASP in a separate run directory unless the user explicitly overrides this.
 - For spinor, SOC, or otherwise spin-resolved Wannier projections, always specify the spin channel explicitly with `(u)` and/or `(d)`. Do not leave spin ambiguity implicit in projection lines.
+- For any custom script that overlays `wannier90_band.dat` with VASP band data, parse defensively: skip comment lines and blank lines instead of assuming every line is numeric data.
+- When plotting or comparing Wannier interpolation against VASP bands, explicitly shift the Wannier energies with `fermi_energy` from `wannier90.win` to relative-Fermi coordinates. Do not assume `wannier90_band.dat` is already referenced to the Fermi level.
 
 ## Output Contract
 
@@ -118,3 +120,4 @@ Do not fabricate exact syntax when `syntax_support_tier` is weak or unknown.
 - Treating weak or unknown syntax support like strong support.
 - Suggesting exact `module load` or MPI commands without a profile.
 - Treating low spread alone as proof of a good Wannier model without checking interpolation quality.
+- Assuming `wannier90_band.dat` is already in relative-Fermi coordinates without checking `wannier90.win`.
