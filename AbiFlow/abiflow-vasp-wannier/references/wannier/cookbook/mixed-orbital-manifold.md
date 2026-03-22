@@ -38,7 +38,7 @@
 
 ## How to choose first-pass windows
 
-- keep the first frozen window tied to the compact candidate
+- keep the first frozen window tied to the compact candidate using absolute energies from `wannier90.eig`
 - only broaden or promote the manifold after checking whether the compact candidate fails physically
 
 ## Minimal `wannier90.win` skeleton

@@ -12,7 +12,7 @@ Use this file when the workflow technically completes but the constructed model 
 ## Symptom: interpolated band distortion
 
 - Likely cause: the selected subspace preserves the wrong states or loses critical crossings
-- Evidence to inspect: interpolated vs. ab initio bands around the distorted region
+- Evidence to inspect: interpolated vs. ab initio bands around the distorted region, then the raw local `k`-point energies if a specific band choice looks wrong
 - First fix: re-check the frozen window against the actual target bands
 - Escalation path: revisit projections and disentanglement together rather than tuning one in isolation
 
@@ -22,6 +22,13 @@ Use this file when the workflow technically completes but the constructed model 
 - Evidence to inspect: band comparison at the affected crossing and orbital character nearby
 - First fix: protect the physically required states first, then rebuild the window logic
 - Escalation path: test whether the target basis itself is incomplete for the crossing physics
+
+## Symptom: suspect wrong high-energy band was selected
+
+- Likely cause: the disentangled subspace is tracking the wrong local branch, or a high-energy comparison is being forced into a one-to-one band-index mapping
+- Evidence to inspect: the overlaid dispersion first, then the raw local `k`-point energies in the suspicious region
+- First fix: stop treating the band index in `wannier90_band.dat` like it must match the original VASP band number and re-evaluate the local energy ordering
+- Escalation path: revisit the projections and frozen-window definition together if the local branch still looks wrong
 
 ## Symptom: orbital leakage or wrong character
 

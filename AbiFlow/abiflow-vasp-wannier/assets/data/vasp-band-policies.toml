@@ -6,6 +6,10 @@ nelm_reasoning = "For a standard first-pass non-selfconsistent band step from a 
 precision_profile = "moderate_first_pass"
 prec_value = "Normal"
 precision_reasoning = "Use moderate precision first. Do not jump to very high precision unless small splittings, symmetry-sensitive crossings, or failed validation prove it is necessary."
+ediff_value = "1E-6"
+ediff_reasoning = "Use a consistent electronic convergence target of EDIFF=1E-6 for this workflow unless the user explicitly asks for a different threshold."
+structural_relaxation_default = false
+structural_relaxation_reasoning = "Do not insert structural optimization by default; start from the provided or otherwise trusted structure and build the static SCF baseline first. Add relaxation only when the structure is not trusted or the user explicitly requests it."
 
 [isolated_insulator]
 symmetry_mode = "keep_on_initially"
@@ -20,20 +24,23 @@ symmetry_reasoning = "An entangled metallic manifold can start with symmetry, bu
 
 [spin_polarized_no_soc]
 symmetry_mode = "guarded"
-isym_value = 0
-symmetry_reasoning = "For spin-polarized setups, prefer caution: magnetic order and spin-resolved character can make aggressive symmetry reduction misleading."
+isym_value = 2
+fallback_isym_value = 0
+symmetry_reasoning = "For collinear spin-polarized setups without SOC, start from the workflow default `ISYM = 2`, but retry with `ISYM = 0` if spin-resolved crossings or orbital character look suspicious."
 
 [soc_spinor]
 symmetry_mode = "disable"
-isym_value = 0
-symmetry_reasoning = "For SOC/spinor band steps, disable symmetry by default unless you have strong evidence the symmetry treatment preserves the target spinor physics."
+isym_value = -1
+symmetry_reasoning = "For SOC/spinor band steps, use `ISYM = -1` by default unless you have strong evidence a different symmetry choice is required."
 
 [noncollinear_magnetic]
-symmetry_mode = "disable"
-isym_value = 0
-symmetry_reasoning = "For noncollinear or symmetry-lowered magnetic cases, disable symmetry for the first band step."
+symmetry_mode = "guarded"
+isym_value = 2
+fallback_isym_value = 0
+symmetry_reasoning = "For noncollinear or symmetry-lowered magnetic cases without SOC, start from the workflow default `ISYM = 2`, but retry with `ISYM = 0` if orbital character, crossings, or magnetic splitting patterns look suspicious."
 
 [mixed_orbital_manifold]
 symmetry_mode = "guarded"
-isym_value = 0
-symmetry_reasoning = "When multiple orbital families compete, prefer the safer symmetry-off path if symmetry reduction could hide the orbital evidence you need."
+isym_value = 2
+fallback_isym_value = 0
+symmetry_reasoning = "When multiple orbital families compete, start from the workflow default `ISYM = 2`, but retry with `ISYM = 0` if symmetry hides the orbital evidence you need."

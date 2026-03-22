@@ -37,8 +37,8 @@
 
 ## How to choose first-pass windows
 
-- `dis_froz_*`: narrow window protecting the target manifold near `E_F`
-- `dis_win_*`: moderate outer window capturing the nearest hybridizing bands
+- `dis_froz_*`: narrow absolute-energy window from `wannier90.eig` protecting the target manifold near `E_F`
+- `dis_win_*`: moderate absolute-energy window from `wannier90.eig` capturing the nearest hybridizing bands
 
 ## Minimal `wannier90.win` skeleton
 
@@ -51,8 +51,8 @@ transition-metal:dxy
 transition-metal:dyz
 transition-metal:dzx
 end projections
-! dis_froz_min/max = protect the target manifold near E_F
-! dis_win_min/max  = include the nearest hybridizing bands
+! dis_froz_min/max = absolute energies from wannier90.eig protecting the target manifold
+! dis_win_min/max  = absolute energies from wannier90.eig including the nearest hybridizing bands
 ```
 
 ## Validation checklist

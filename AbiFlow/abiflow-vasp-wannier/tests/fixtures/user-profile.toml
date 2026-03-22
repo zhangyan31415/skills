@@ -16,3 +16,4 @@ module_load = ["vasp/6.4.2", "wannier90/3.1.0"]
 soc = true
 noncollinear = true
 spin_polarized = true
+wannier90_parallel = true
