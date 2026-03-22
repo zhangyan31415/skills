@@ -20,8 +20,11 @@
 ## Guardrails
 
 - A wider window is not automatically better.
+- Before increasing `num_wann`, count how many KS states the chosen outer window contains at each `k` point on the actual uniform mesh.
+- If any `k` point has fewer outer-window states than `num_wann`, stop and fix the target manifold or the outer window before launching that run.
 - If the only energies available are already shifted to `E - E_F`, do not present them as final `dis_froz_*` / `dis_win_*` values for this workflow.
 - If the user cannot define the target observables or orbitals, stop before setting windows.
 - Recheck the projection set when disentanglement behaves unstably.
+- A long disentanglement run is not by itself a failure if there is no hard error and the objective is still decreasing.
 
 See `parameter-decision-table.md`, `minimal-win-template-fields.md`, and the case cookbooks for first-pass window policies.

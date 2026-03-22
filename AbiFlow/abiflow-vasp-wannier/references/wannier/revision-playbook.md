@@ -1,5 +1,11 @@
 # Revision Playbook
 
+## Default revision order
+
+1. verify the target subspace is physically complete
+2. then adjust frozen and outer windows
+3. only after that fine-tune convergence or optimizer details
+
 ## If interpolation is bad but spread is only moderate
 
 1. re-check the target subspace

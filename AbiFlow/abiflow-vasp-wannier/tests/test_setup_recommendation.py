@@ -28,6 +28,7 @@ def test_isolated_insulator_recommendation_is_concrete():
     assert rec["case_id"] == "isolated_insulator"
     assert rec["num_wann"] == 4
     assert rec["num_wann_counting_explanation"]
+    assert "projection lines" in rec["num_wann_counting_explanation"].lower()
     assert rec["projection_candidates"]
     assert rec["disentanglement_needed"] is False
     assert rec["disentanglement_reasoning"]
@@ -68,6 +69,8 @@ def test_entangled_metal_recommendation_contains_window_logic():
     assert rec["recommended_vasp_band_settings"]["nelm_value"] != 1
     assert rec["recommended_vasp_band_settings"]["ediff_value"] == "1E-6"
     assert rec["recommended_vasp_band_settings"]["symmetry_mode"] == "guarded"
+    assert "subspace" in rec["first_revision_actions_ranked"][0].lower()
+    assert any("95%" in check or "worst" in check.lower() for check in rec["validation_checks"])
 
 
 def test_same_physics_case_keeps_setup_logic_but_changes_interface_guardrails():

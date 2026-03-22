@@ -6,7 +6,7 @@ window_strategy = "omit"
 window_reasoning = "Omit disentanglement windows until there is evidence that the manifold is not actually isolated."
 numeric_window_allowed = false
 required_vasp_outputs = ["converged SCF baseline", "bands covering the isolated target manifold", "confirmed interface handoff files for the resolved version family"]
-validation_checks = ["compare interpolated and reference bands", "verify the target gap stays intact", "check orbital character and spread reasonableness"]
+validation_checks = ["compare interpolated and reference bands in the target window", "verify there are no missing target bands and the target gap stays intact", "report 95% interpolation error and the worst mismatch before judging spread"]
 first_revision_actions_ranked = ["check target subspace completeness", "expand the projection family", "only then reconsider whether disentanglement is needed"]
 
 [entangled_metal]
@@ -17,8 +17,8 @@ window_strategy = "moderate"
 window_reasoning = "Keep the frozen window narrow around the target manifold and the outer window only moderately broader."
 numeric_window_allowed = true
 required_vasp_outputs = ["converged SCF baseline", "bands or eigenvalues around E_F", "confirmed interface handoff files for the resolved version family"]
-validation_checks = ["compare crossings near E_F", "verify orbital character stays attached to the target manifold", "check frozen-window robustness"]
-first_revision_actions_ranked = ["adjust projection family", "tighten frozen window", "then revisit the outer window"]
+validation_checks = ["compare crossings near E_F and check for missing target bands", "verify orbital character stays attached to the target manifold", "report 95% interpolation error and the worst mismatch before preferring spread"]
+first_revision_actions_ranked = ["check target subspace completeness on the actual uniform k mesh", "adjust projection family before repeated window sweeps", "only then tighten the frozen and outer windows"]
 
 [spin_polarized_no_soc]
 case_label = "Spin-Polarized Without SOC"
@@ -28,8 +28,8 @@ window_strategy = "narrow"
 window_reasoning = "Keep windows tied to the physically relevant states in each spin channel."
 numeric_window_allowed = true
 required_vasp_outputs = ["converged spin-polarized baseline", "spin-resolved bands for the target manifold", "confirmed interface handoff files for the resolved version family"]
-validation_checks = ["compare majority and minority interpolation separately", "verify channel-resolved orbital character", "check whether scalar treatment is still adequate"]
-first_revision_actions_ranked = ["verify channel treatment", "adjust projections per channel", "then revisit disentanglement"]
+validation_checks = ["compare majority and minority interpolation separately and check for missing target bands", "verify channel-resolved orbital character", "report 95% interpolation error and the worst mismatch in each channel"]
+first_revision_actions_ranked = ["verify channel treatment and target-subspace completeness", "adjust projections per channel", "only then revisit disentanglement or windows"]
 
 [soc_spinor]
 case_label = "SOC Spinor"
@@ -39,8 +39,8 @@ window_strategy = "narrow"
 window_reasoning = "Keep a tight frozen window around the SOC-split target manifold first."
 numeric_window_allowed = true
 required_vasp_outputs = ["converged SOC baseline", "bands covering the SOC-split manifold", "confirmed interface handoff files for the resolved version family"]
-validation_checks = ["check that SOC splittings survive interpolation", "compare crossings and orbital character in the SOC-sensitive region", "verify the result is not behaving like a scalar draft"]
-first_revision_actions_ranked = ["verify the spinor target manifold", "adjust spinor-compatible projections", "then revisit frozen and outer windows"]
+validation_checks = ["check that SOC splittings survive interpolation without missing target bands", "compare crossings and orbital character in the SOC-sensitive region", "report 95% interpolation error and the worst mismatch before judging spread"]
+first_revision_actions_ranked = ["verify the spinor target manifold is physically complete", "adjust spinor-compatible projections", "only then revisit frozen and outer windows"]
 
 [noncollinear_magnetic]
 case_label = "Noncollinear Magnetic"
@@ -50,8 +50,8 @@ window_strategy = "moderate"
 window_reasoning = "Protect the magnetically relevant manifold first and broaden only enough to keep it connected."
 numeric_window_allowed = true
 required_vasp_outputs = ["converged noncollinear magnetic baseline", "bands covering the magnetic target manifold", "confirmed interface handoff files for the resolved version family"]
-validation_checks = ["check magnetic splitting patterns", "verify orbital character remains attached to the magnetic manifold", "inspect spinor-subspace robustness"]
-first_revision_actions_ranked = ["tighten magnetic target manifold definition", "check projection robustness", "then revisit windows"]
+validation_checks = ["check magnetic splitting patterns without missing target bands", "verify orbital character remains attached to the magnetic manifold", "report 95% interpolation error and the worst mismatch before preferring spread"]
+first_revision_actions_ranked = ["tighten the magnetic target manifold definition first", "check projection robustness", "only then revisit windows"]
 
 [mixed_orbital_manifold]
 case_label = "Mixed-Orbital Manifold"
@@ -61,5 +61,5 @@ window_strategy = "moderate"
 window_reasoning = "Tie the first frozen window to the compact candidate and only broaden after testing candidate-family sufficiency."
 numeric_window_allowed = true
 required_vasp_outputs = ["converged SCF baseline", "bands covering every plausible candidate manifold", "confirmed interface handoff files for the resolved version family"]
-validation_checks = ["compare candidate manifolds against the target observable", "inspect whether leakage is a manifold problem", "preserve crossings and orbital character before preferring the smaller basis"]
-first_revision_actions_ranked = ["compare candidate families explicitly", "promote to a richer manifold before ad hoc window tuning", "only then revisit num_wann or disentanglement"]
+validation_checks = ["compare candidate manifolds against the target observable and check for missing target bands", "inspect whether leakage is a manifold problem", "report 95% interpolation error and the worst mismatch before preferring the smaller basis"]
+first_revision_actions_ranked = ["compare candidate families explicitly and count states on the actual k mesh", "promote to a richer manifold before ad hoc window tuning", "only then revisit num_wann or disentanglement"]

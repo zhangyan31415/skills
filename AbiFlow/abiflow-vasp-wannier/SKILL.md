@@ -73,11 +73,17 @@ Apply these defaults whenever they do not conflict with an explicit user request
 - Do not prewrite `mp_grid` in `wannier90.win` for the VASP-to-Wannier interface path; let VASP add that block automatically.
 - Do not prewrite `unit_cell_cart` in `wannier90.win` for the VASP-to-Wannier interface path; let VASP add that block from `POSCAR`.
 - For spinor, SOC, or otherwise spin-resolved Wannier projections, always specify the spin channel explicitly with `(u)` and/or `(d)`. Do not leave spin ambiguity implicit in projection lines.
+- Do not infer `num_wann` by counting `projections` lines alone. Count the actual Wannier functions contributed by equivalent atoms, scalar spin channels, and any spinor doubling.
+- Before increasing `num_wann`, count how many KS states fall inside the chosen outer window on the actual uniform `k` mesh. If any `k` point has fewer window states than `num_wann`, stop and fix the window or target manifold first.
 - Write `dis_froz_*` and `dis_win_*` in absolute energies taken from `wannier90.eig`, not in `E - E_F`.
 - Whenever this workflow needs a Fermi level reference, use the converged SCF Fermi energy.
 - Treat `fermi_energy` in `wannier90.win` as a plotting and post-processing reference built from the converged SCF Fermi energy; it does not shift disentanglement windows into relative-Fermi coordinates.
+- When revising a poor fit, use this order by default: verify target-subspace completeness first, then adjust frozen and outer windows, and only then fine-tune convergence or optimizer settings.
 - For any custom script that overlays `wannier90_band.dat` with VASP band data, parse defensively: skip comment lines and blank lines instead of assuming every line is numeric data.
 - When plotting or comparing Wannier interpolation against VASP bands, explicitly shift the Wannier energies with `fermi_energy` from `wannier90.win` to relative-Fermi coordinates. Do not assume `wannier90_band.dat` is already referenced to the Fermi level.
+- Do not use spread alone as the go/no-go metric. Decide from missing bands in the target window, the 95% interpolation error, and the worst local mismatch or path segment.
+- A long disentanglement run is not by itself a failure. If there is no hard error and the objective is still decreasing, let it run to convergence or the iteration limit before rejecting the setup.
+- For remote or background runs, prefer the simplest reproducible launch pattern and always keep an independent log file. Do not build fragile compound shell background commands that can fail silently.
 
 ## Output Contract
 
@@ -127,10 +133,14 @@ Do not fabricate exact syntax when `syntax_support_tier` is weak or unknown.
 - Leaving symmetry choices on autopilot when the target physics is SOC-sensitive, orbital-character-sensitive, or symmetry-lowered.
 - Using `LREAL = Auto` or `LREAL = .TRUE.` by habit in this workflow when the run is intended for reliable Wannier handoff.
 - Padding `INCAR` with convenience flags that do not materially serve the target physics or the VASP-to-Wannier interface.
+- Counting projection lines as if they were automatically equal to `num_wann`.
 - Saying only “tune the windows” without stating what to change first and why.
 - Treating weak or unknown syntax support like strong support.
 - Suggesting exact `module load` or MPI commands without a profile.
 - Treating low spread alone as proof of a good Wannier model without checking interpolation quality.
+- Increasing `num_wann` before checking whether every `k` point in the outer window actually contains at least that many KS states.
+- Treating a long disentanglement run as bad just because it is slow while the objective is still decreasing.
+- Using fragile remote background command chains without a dedicated standalone log.
 - Starting from a structural relaxation by habit when the workflow default is a trusted-structure static SCF path.
 - Treating `wannier90.x` like a serial-only executable when the runtime profile can support parallel execution.
 - Assuming `wannier90_band.dat` is already in relative-Fermi coordinates without checking `wannier90.win`.

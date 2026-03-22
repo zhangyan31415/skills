@@ -13,7 +13,7 @@ Use this file when the workflow technically completes but the constructed model 
 
 - Likely cause: the selected subspace preserves the wrong states or loses critical crossings
 - Evidence to inspect: interpolated vs. ab initio bands around the distorted region, then the raw local `k`-point energies if a specific band choice looks wrong
-- First fix: re-check the frozen window against the actual target bands
+- First fix: re-check whether the target subspace itself is physically complete before doing another window sweep
 - Escalation path: revisit projections and disentanglement together rather than tuning one in isolation
 
 ## Symptom: missing or damaged crossings
@@ -54,9 +54,16 @@ Use this file when the workflow technically completes but the constructed model 
 ## Symptom: spread not huge but interpolation still poor
 
 - Likely cause: numerical localization succeeded without preserving the right physics
-- Evidence to inspect: crossing preservation, orbital character, and target-window fidelity
+- Evidence to inspect: crossing preservation, orbital character, missing bands in the target window, the 95% interpolation error, and the worst local mismatch
 - First fix: treat this as a validation failure, not a spread-only issue
 - Escalation path: revisit projections and windows together
+
+## Symptom: disentanglement runs for a long time
+
+- Likely cause: the iterative disentanglement is still converging rather than failing outright
+- Evidence to inspect: whether there is any hard error and whether the objective keeps decreasing monotonically
+- First fix: let the run continue to convergence or the iteration limit before discarding the setup
+- Escalation path: if the objective stalls or a hard error appears, then revisit the target subspace and window robustness
 
 ## Symptom: slight window change causes severe instability
 
