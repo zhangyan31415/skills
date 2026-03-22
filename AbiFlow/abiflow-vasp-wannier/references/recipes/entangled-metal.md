@@ -7,7 +7,7 @@ Use this recipe when the target subspace crosses or mixes with nearby bands.
 1. Define the physically relevant orbitals before discussing windows.
 2. Distinguish the outer disentanglement window from the frozen window.
 3. If the user provides band energies, estimate a candidate window with `scripts/extract_band_window.py`, then refine manually.
-4. Keep VASP inputs lean, use `LREAL = .FALSE.`, use `ISYM = 2` for non-SCF steps without SOC, and switch to `ISYM = -1` only when the non-SCF target includes SOC.
+4. Keep VASP inputs lean, do not add structural relaxation by default, use `PREC = Normal`, use `EDIFF = 1E-6`, use `LREAL = .FALSE.`, use `ISYM = 2` for non-SCF steps without SOC, and switch to `ISYM = -1` only when the non-SCF target includes SOC.
 
 ## Guardrails
 

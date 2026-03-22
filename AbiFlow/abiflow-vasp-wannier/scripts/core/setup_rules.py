@@ -137,7 +137,7 @@ def _window_recommendation(rule: Dict[str, Any], band_energies: Optional[Iterabl
     recommendation = {
         "strategy": strategy,
         "reasoning": rule.get("window_reasoning", ""),
-        "energy_reference": "fermi_level" if strategy != "omit" else "target_manifold",
+        "energy_reference": "absolute_wannier_eig" if strategy != "omit" else "target_manifold",
     }
     if strategy != "omit" and band_energies:
         padding = {"narrow": 0.2, "moderate": 0.5, "broad": 1.0}.get(strategy, 0.5)
@@ -178,10 +178,10 @@ def _minimal_win_fields(recommendation: Dict[str, Any]) -> List[str]:
         else:
             fields.extend(
                 [
-                    "! dis_froz_min = protect the target manifold first",
-                    "! dis_froz_max = protect the target manifold first",
-                    "! dis_win_min = include the nearest hybridizing bands below the target manifold",
-                    "! dis_win_max = include the nearest hybridizing bands above the target manifold",
+                    "! dis_froz_min = absolute energy from wannier90.eig protecting the target manifold",
+                    "! dis_froz_max = absolute energy from wannier90.eig protecting the target manifold",
+                    "! dis_win_min = absolute energy from wannier90.eig including nearby hybridizing bands below the target manifold",
+                    "! dis_win_max = absolute energy from wannier90.eig including nearby hybridizing bands above the target manifold",
                 ]
             )
     return fields
@@ -203,6 +203,16 @@ def _recommended_vasp_band_settings(skill_root: Path, case_id: str) -> Dict[str,
         "precision_profile": common["precision_profile"],
         "prec_value": common["prec_value"],
         "precision_reasoning": common["precision_reasoning"],
+        "ediff_value": common["ediff_value"],
+        "ediff_reasoning": common["ediff_reasoning"],
+    }
+
+
+def _recommended_structure_policy(skill_root: Path) -> Dict[str, Any]:
+    common = _vasp_band_policies(skill_root)["common"]
+    return {
+        "structural_relaxation_default": bool(common["structural_relaxation_default"]),
+        "structural_relaxation_reasoning": common["structural_relaxation_reasoning"],
     }
 
 
@@ -246,10 +256,12 @@ def recommend_wannier_setup(skill_root: Path, facts: Dict[str, Any], *, vasp_ver
         "window_recommendation": {
             "strategy": setup_rule.get("window_strategy"),
             "reasoning": setup_rule.get("window_reasoning"),
+            "energy_reference": window["energy_reference"],
         },
         "numeric_window_recommendation": window["numeric_window_recommendation"],
         "minimal_win_fields": [],
         "required_vasp_outputs": list(setup_rule.get("required_vasp_outputs", [])),
+        "recommended_structure_policy": _recommended_structure_policy(skill_root),
         "recommended_vasp_band_settings": _recommended_vasp_band_settings(skill_root, case_id),
         "validation_checks": list(setup_rule.get("validation_checks", [])),
         "first_revision_actions_ranked": list(setup_rule.get("first_revision_actions_ranked", [])),

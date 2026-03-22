@@ -11,4 +11,8 @@
 ## Template discipline
 
 - Keep the first template minimal and internally consistent.
+- For the VASP interface path, do not prewrite `mp_grid`; let VASP add that block automatically.
+- For the VASP interface path, do not prewrite `unit_cell_cart`; let VASP add that block from `POSCAR`.
+- If `fermi_energy` is included, set it from the converged SCF Fermi energy.
+- Write `dis_froz_*` and `dis_win_*` in absolute energies from `wannier90.eig`, not in `E - E_F`.
 - If exact numeric windows are not yet known, write explicit placeholders with the intended physical role instead of inventing precise numbers.

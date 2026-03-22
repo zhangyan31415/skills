@@ -35,10 +35,10 @@ def draft_win_template(skill_root: Path, recommendation: Dict[str, any], overrid
         else:
             window_block = "\n".join(
                 [
-                    "! dis_froz_min = protect the target manifold first",
-                    "! dis_froz_max = protect the target manifold first",
-                    "! dis_win_min = include the nearest hybridizing bands below the target manifold",
-                    "! dis_win_max = include the nearest hybridizing bands above the target manifold",
+                    "! dis_froz_min = absolute energy from wannier90.eig protecting the target manifold",
+                    "! dis_froz_max = absolute energy from wannier90.eig protecting the target manifold",
+                    "! dis_win_min = absolute energy from wannier90.eig including nearby hybridizing bands below the target manifold",
+                    "! dis_win_max = absolute energy from wannier90.eig including nearby hybridizing bands above the target manifold",
                 ]
             )
     else:

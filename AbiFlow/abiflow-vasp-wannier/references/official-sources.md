@@ -42,5 +42,6 @@ Use official sources selectively. This skill stays local-first for ordinary work
 - `VASP 5.4 Wannier90 interface files`
 - `VASP 6.4 wannier interface hdf5`
 - `Wannier90 3.1 VASP interface options`
+- `Wannier90 parallel execution`
 - `Wannier90 release notes disentanglement defaults`
 - The exact raw error string plus the tool name

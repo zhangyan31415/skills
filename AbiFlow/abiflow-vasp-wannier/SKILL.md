@@ -49,22 +49,33 @@ Do not use this skill to guess exact launch commands when the user has not provi
 
 Apply these defaults whenever they do not conflict with an explicit user request for a specific run:
 
-- For self-consistent VASP runs, set `ISYM = 2`.
+- Do not add a structural relaxation step by default. Start from the provided or otherwise trusted structure and build the static SCF baseline first unless the user explicitly asks for relaxation or the structure is not trusted.
+- For self-consistent VASP runs, set `ISYM = 2`, including SOC or noncollinear cases unless the user explicitly overrides this.
 - For non-SCF runs without SOC, including band-structure and Wannier-interface steps, set `ISYM = 2`.
 - For SOC-enabled non-SCF, band-structure, and Wannier-interface runs, set `ISYM = -1`.
-- For all self-consistent runs, keep `ISYM = 2` even when SOC or noncollinear magnetism is present unless the user explicitly overrides this.
+- For all VASP runs in this workflow, set `PREC = Normal` unless the user explicitly overrides this.
+- For all VASP runs in this workflow, set `EDIFF = 1E-6` unless the user explicitly overrides this.
 - Set `ENCUT` to `1.3x` to `1.5x` the largest `ENMAX` among the elements in the chosen POTCAR set unless the user explicitly asks otherwise.
 - Never set `ADDGRID` unless the user explicitly asks for it.
 - For systems that are nonperiodic along one direction, such as slabs, 2D materials, or cells with a large vacuum direction, use a `Gamma`-centered mesh and set the nonperiodic direction to `1`.
 - Prefer `Gamma`-centered meshes for self-consistent runs in this workflow unless the user explicitly specifies a different mesh convention.
 - If SOC is enabled or the run is noncollinear, always use `vasp_ncl`.
 - If the system is nonmagnetic and has no SOC, use `vasp_std`.
+- `wannier90.x` itself can run in parallel when the runtime profile supports it; do not treat it as serial-only, but do not invent site-specific launcher flags without profile facts.
 - For VASP calculations in this workflow, set `LREAL = .FALSE.` unless the user explicitly asks otherwise.
 - Keep `INCAR` inputs lean; do not add parameters unless they are needed for the target physics, interface handoff, convergence, or a user-stated requirement.
 - For band-path calculations, use 20 points per path segment unless the user specifies otherwise.
+- If the SCF baseline is not electronically converged, fix the convergence problem before exporting interface files or diagnosing Wannier quality.
 - For the Wannier-interface VASP step, write `WAVECAR` and read it back with `ISTART = 1`.
+- For the first VASP-to-Wannier interface run that generates `mmn`/`amn`/`eig`-style handoff files, if no `WAVECAR` is present, copy in the converged SCF `WAVECAR` and read it with `ISTART = 1`.
+- If the user later changes only the Wannier projections and reruns the VASP-to-Wannier interface step, reuse the `WAVECAR` from the first successful interface run instead of going back to the SCF run.
 - Never set `LWANNIER90_RUN = .TRUE.` in this workflow. Keep Wannier optimization outside VASP in a separate run directory unless the user explicitly overrides this.
+- Do not prewrite `mp_grid` in `wannier90.win` for the VASP-to-Wannier interface path; let VASP add that block automatically.
+- Do not prewrite `unit_cell_cart` in `wannier90.win` for the VASP-to-Wannier interface path; let VASP add that block from `POSCAR`.
 - For spinor, SOC, or otherwise spin-resolved Wannier projections, always specify the spin channel explicitly with `(u)` and/or `(d)`. Do not leave spin ambiguity implicit in projection lines.
+- Write `dis_froz_*` and `dis_win_*` in absolute energies taken from `wannier90.eig`, not in `E - E_F`.
+- Whenever this workflow needs a Fermi level reference, use the converged SCF Fermi energy.
+- Treat `fermi_energy` in `wannier90.win` as a plotting and post-processing reference built from the converged SCF Fermi energy; it does not shift disentanglement windows into relative-Fermi coordinates.
 - For any custom script that overlays `wannier90_band.dat` with VASP band data, parse defensively: skip comment lines and blank lines instead of assuming every line is numeric data.
 - When plotting or comparing Wannier interpolation against VASP bands, explicitly shift the Wannier energies with `fermi_energy` from `wannier90.win` to relative-Fermi coordinates. Do not assume `wannier90_band.dat` is already referenced to the Fermi level.
 
@@ -113,11 +124,17 @@ Do not fabricate exact syntax when `syntax_support_tier` is weak or unknown.
 - Treating a raw error message like a generic workflow question instead of routing it through triage and official-source rules.
 - Ignoring `PROCAR` when several projection families are plausible and orbital character is the missing evidence.
 - Writing `NELM=1` as a generic first-pass band-step default.
-- Leaving symmetry on by reflex when the target physics is SOC-sensitive, noncollinear, or symmetry-lowered.
+- Leaving symmetry choices on autopilot when the target physics is SOC-sensitive, orbital-character-sensitive, or symmetry-lowered.
 - Using `LREAL = Auto` or `LREAL = .TRUE.` by habit in this workflow when the run is intended for reliable Wannier handoff.
 - Padding `INCAR` with convenience flags that do not materially serve the target physics or the VASP-to-Wannier interface.
 - Saying only “tune the windows” without stating what to change first and why.
 - Treating weak or unknown syntax support like strong support.
 - Suggesting exact `module load` or MPI commands without a profile.
 - Treating low spread alone as proof of a good Wannier model without checking interpolation quality.
+- Starting from a structural relaxation by habit when the workflow default is a trusted-structure static SCF path.
+- Treating `wannier90.x` like a serial-only executable when the runtime profile can support parallel execution.
 - Assuming `wannier90_band.dat` is already in relative-Fermi coordinates without checking `wannier90.win`.
+- Mixing Fermi energies from different calculation stages instead of consistently using the converged SCF Fermi energy.
+- Writing `dis_froz_*` or `dis_win_*` in `E - E_F` instead of absolute energies from `wannier90.eig`.
+- Prewriting `mp_grid` in `wannier90.win` for a VASP-driven interface run where VASP will add it automatically.
+- Prewriting `unit_cell_cart` in `wannier90.win` for a VASP-driven interface run where VASP will add it from `POSCAR`.

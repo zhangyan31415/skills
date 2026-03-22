@@ -8,9 +8,9 @@ from abiflow_skill_lib import parse_energy_list, recommend_energy_window, to_jso
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Recommend an energy window from a plain-text list of band energies.")
-    parser.add_argument("path", type=Path, help="Text file with one or more numeric energy values per line.")
-    parser.add_argument("--fermi", type=float, default=0.0, help="Reference Fermi level in eV.")
+    parser = argparse.ArgumentParser(description="Recommend an absolute-energy window from a plain-text list of band energies.")
+    parser.add_argument("path", type=Path, help="Text file with one or more absolute band energies per line, ideally from wannier90.eig or an equivalent absolute-energy source.")
+    parser.add_argument("--fermi", type=float, default=0.0, help="Converged SCF Fermi level in eV for metadata only; this does not shift the recommended window.")
     parser.add_argument("--padding", type=float, default=0.5, help="Padding added around min/max energies.")
     args = parser.parse_args()
 

@@ -5,7 +5,9 @@ Use moderate precision first. A first-pass Wannier setup should spend effort on 
 ## Default first-pass policy
 
 - `PREC = Normal`
+- `EDIFF = 1E-6`
 - keep the band step consistent with the trusted SCF baseline
+- keep the same `PREC` and `EDIFF` defaults across SCF, band, and interface runs unless the user explicitly overrides them
 - do not increase precision just because the model is imperfect
 
 ## Escalate precision only when

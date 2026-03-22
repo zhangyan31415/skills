@@ -2,18 +2,20 @@
 
 ## Checkpoint 1: Define the physical target
 
-- Identify the material, crystal setting, and whether the structure is already relaxed.
+- Identify the material, crystal setting, and whether the provided structure is already trusted; this workflow defaults to no structural relaxation unless the user explicitly asks for it or the structure is not trusted.
 - State the target subspace explicitly: which orbitals, which energy region, and whether the final use is interpolation, model building, or analysis.
 - Flag whether SOC, magnetism, strong orbital mixing, or entangled bands are expected.
 - Classify the setup case before proposing parameters: isolated insulator, entangled metal, spin-polarized no-SOC, SOC spinor, noncollinear magnetic, or mixed-orbital manifold.
 
 ## Checkpoint 2: Build the VASP path
 
-- Relax only if the structure is not already trusted.
+- Do not insert structural optimization by default; start from the trusted structure and build a static SCF baseline first.
+- Relax only if the structure is not already trusted or the user explicitly asks for it.
 - Separate relaxation, static SCF, and band/path calculations in the reasoning, even if the user later combines them in practice.
+- Do not treat an unconverged SCF baseline as acceptable input for interface export; fix the SCF first.
 - If the user asks for exact input tags, read `vasp/relax-scf-bands.md` and `vasp/incar-knobs.md`.
 - If the user gives a raw VASP error or incomplete export symptoms, enter the debug flow and classify the stage before suggesting fixes.
-- For the first band step, be conservative: standard fixed-charge band logic, no reflexive `NELM=1`, moderate precision, `LREAL = .FALSE.`, lean `INCAR` choices, and symmetry only when safe for the target physics.
+- For the first band step, be conservative: standard fixed-charge band logic, no reflexive `NELM=1`, `PREC = Normal`, `EDIFF = 1E-6`, `LREAL = .FALSE.`, lean `INCAR` choices, `ISYM = 2` for non-SCF without SOC, and `ISYM = -1` for SOC-enabled non-SCF.
 
 ## Checkpoint 3: Define the Wannier target
 

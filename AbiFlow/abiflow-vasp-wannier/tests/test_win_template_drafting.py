@@ -59,6 +59,10 @@ def test_spinor_template_is_not_scalar():
 
     assert "spinors = true" in template
     assert "num_wann = 6" in template
+    assert "(u)" in template
+    assert "(d)" in template
+    assert "mp_grid" not in template
+    assert "unit_cell_cart" not in template
 
 
 def test_template_marks_assumptions_when_facts_are_missing():

@@ -12,6 +12,7 @@ Symmetry is not a universal default for Wannier setup work. Use it when it clear
 
 - entangled metals
 - spin-polarized collinear cases
+- noncollinear magnetic or symmetry-lowered magnetic cases without SOC, where this workflow still starts from `ISYM = 2` but may need a quick retry with `ISYM = 0`
 - mixed-orbital manifolds where orbital character evidence matters
 
 In these cases, symmetry may be acceptable for a first pass, but if orbital character, crossings, or frozen-window robustness look suspicious, retry with `ISYM=0` before over-tuning Wannier windows.
@@ -19,13 +20,12 @@ In these cases, symmetry may be acceptable for a first pass, but if orbital char
 ## Default symmetry-off cases
 
 - SOC / spinor non-SCF cases, where `ISYM = -1` is the default first pass
-- noncollinear magnetic cases
-- symmetry-lowered magnetic states
 - cases where tiny splittings or delicate crossings are the target observable
 
 ## Practical rule
 
 - symmetry is an efficiency tool
-- for SCF runs and non-SCF runs without SOC, start from `ISYM = 2` unless the target physics argues otherwise
+- for SCF runs, start from `ISYM = 2`, including SOC or noncollinear cases unless the user explicitly overrides this workflow
+- for non-SCF runs without SOC, start from `ISYM = 2`
 - for SOC-enabled non-SCF runs, start from `ISYM = -1`
 - if symmetry risks distorting the target manifold or hiding orbital evidence, turn it off

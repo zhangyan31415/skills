@@ -7,7 +7,7 @@ Use this recipe when SOC, noncollinearity, or magnetic order materially changes 
 1. Verify that the runtime profile or explicit facts confirm the required capability bits.
 2. Treat spinor structure and symmetry lowering as first-order concerns, not post-processing details.
 3. Choose projections that still make physical sense after SOC or magnetic splitting.
-4. Keep the VASP inputs lean, use `LREAL = .FALSE.`, keep SCF at `ISYM = 2`, and switch SOC-enabled non-SCF steps to `ISYM = -1`.
+4. Keep the VASP inputs lean, do not add structural relaxation by default, use `PREC = Normal`, use `EDIFF = 1E-6`, use `LREAL = .FALSE.`, keep SCF at `ISYM = 2`, and switch SOC-enabled non-SCF steps to `ISYM = -1`.
 
 ## Guardrails
 

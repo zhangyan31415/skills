@@ -23,6 +23,7 @@ def test_explicit_facts_override_profile_values():
     assert context["software"]["vasp"] == "6.4.3"
     assert context["software"]["wannier90"] == "3.1.0"
     assert context["launcher"]["mpi"] == "mpirun"
+    assert context["capabilities"]["wannier90_parallel"] is True
     assert "software.vasp" in context["conflicts"]
     assert "launcher.mpi" in context["conflicts"]
 

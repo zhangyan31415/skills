@@ -16,9 +16,16 @@
 
 1. promote to a richer manifold if the compact basis is undersized
 2. only after that tune windows
+3. if near-Fermi composition is central to the diagnosis, prefer projection output taken directly from the converged SCF run
 
 ## If crossings are damaged
 
 1. protect the physically required states first
 2. then revisit the projection family
 3. only then revisit the outer window
+
+## If the wrong high-energy band seems to be selected
+
+1. inspect the overlaid dispersion first
+2. then check the raw local `k`-point energies in the suspicious region
+3. only after that revisit projections or window choices
