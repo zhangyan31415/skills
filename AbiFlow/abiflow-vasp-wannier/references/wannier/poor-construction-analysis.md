@@ -23,6 +23,13 @@ Use this file when the workflow technically completes but the constructed model 
 - First fix: prioritize the correct target subspace and near-Fermi fidelity over minimizing total spread; test `exclude_bands` and reset the frozen/outer windows around the intended states
 - Escalation path: if the better physical subspace still looks unstable, revisit projections, band counting, and the actual VASP-generated handoff files together
 
+## Symptom: total spread looks large but per-WF spreads look normal
+
+- Likely cause: the Wannier count is large enough that `Omega Total` looks big even though the final spread distribution is individually reasonable
+- Evidence to inspect: the final per-WF spread list, not only `Omega Total`
+- First fix: judge the fit from the per-WF spread distribution together with the band interpolation quality near the target region
+- Escalation path: if several individual WFs are still clearly abnormal, revisit projections and the target manifold instead of blaming the total alone
+
 ## Symptom: missing or damaged crossings
 
 - Likely cause: the frozen window protects the wrong states or the chosen basis breaks the desired connectivity

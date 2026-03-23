@@ -6,6 +6,7 @@
 - When overlaying `wannier90_band.dat` with VASP bands, put both datasets on the same relative-Fermi energy axis by subtracting the converged SCF Fermi energy, carried in `fermi_energy` inside `wannier90.win`, from the Wannier energies.
 - Check whether the Wannier basis preserves the physically relevant splittings and crossings.
 - Inspect total spread and unusually large individual spreads.
+- If many Wannier functions are present, inspect the final per-WF spread distribution instead of judging the fit from `Omega Total` alone.
 - Treat the final subspace fidelity near the physically relevant region as more important than minimizing total spread alone.
 
 ## Read-only helpers
@@ -18,8 +19,10 @@
 - Do not use spread alone as the success criterion.
 - Do not stop at “spread is lower” if the interpolated bands are clearly worse in the physically relevant region.
 - A run with larger total spread can still be the more correct Wannier model if `exclude_bands` and the frozen/outer windows preserve the intended subspace and improve the near-Fermi interpolation.
+- Do not treat `Omega Total` alone as a verdict when the Wannier count is large; check whether the final per-WF spreads are actually distributed normally.
 - Do not assume `wannier90_band.dat` has already been shifted to the Fermi level.
 - Do not mix Fermi references from different stages; use the converged SCF Fermi energy consistently for plotting and comparison.
+- Keep one Fermi reference across a single VASP-versus-Wannier comparison figure, preferably the SCF `E_F`.
 - Do not assume `fermi_energy` will shift `dis_froz_*` or `dis_win_*`; those windows must stay in absolute energies.
 - If a custom plotting script reads `wannier90_band.dat`, make it skip blank lines and comment lines instead of assuming a dense numeric-only file.
 - Validate against physical outputs first; on shared filesystems, do not treat scheduler logs as the primary source of truth when `OUTCAR`, `.wout`, and band data are already available.

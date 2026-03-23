@@ -14,8 +14,9 @@ Use this file when deciding whether the VASP side is ready for a meaningful Wann
 
 - `num_bands` belongs to the VASP-to-Wannier handoff, not to the chemistry alone.
 - Keep it consistent with the exported interface files.
+- In parallel VASP runs, the code may increase `NBANDS` automatically to satisfy the parallel layout.
 - Do not treat a hand-written `NBANDS` as the final answer for later Wannier windowing or diagnostics.
-- Use the actual VASP-generated `wannier90.win` and `wannier90.eig` as the source of truth for final band counting, window placement, and downstream checks.
+- Use the actual value reported in `OUTCAR`, together with the VASP-generated `wannier90.win` and `wannier90.eig`, as the source of truth for final band counting, window placement, and downstream checks.
 - Do not guess exact interface-file semantics for unsupported or weak version families.
 
 ## How to think about `exclude_bands`
@@ -40,6 +41,7 @@ Use this file when deciding whether the VASP side is ready for a meaningful Wann
 - use `ISYM = 2` for SCF and for non-SCF steps without SOC, and switch SOC-enabled non-SCF steps to `ISYM = -1`
 - for nonmagnetic SOC setups, keep the magnetic moments explicitly zero-valued rather than leaving the state implicit
 - for band-structure paths, use 20 points per path segment unless the user explicitly asks for a different density
+- in a standard non-SCF band step, warnings such as `stress and forces are not correct` are usually expected and should not be treated as a failure by themselves
 - write `WAVECAR` and read it back with `ISTART = 1` for the Wannier-interface step
 - if the first interface run has no `WAVECAR` yet, copy the converged SCF `WAVECAR` into the interface directory before running
 - if the user only changes projections for a follow-up interface export, reuse the `WAVECAR` from the first successful interface run

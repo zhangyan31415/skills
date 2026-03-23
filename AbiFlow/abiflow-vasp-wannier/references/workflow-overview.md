@@ -23,6 +23,7 @@
 
 - Choose initial projections from chemistry and symmetry first.
 - Decide whether the case is isolated-band or entangled-band before discussing windows.
+- Window strategy and target subspace must be discussed together; unstable windows usually mean the target subspace itself is still not defined sharply enough.
 - If the user is unsure, route to a recipe in `recipes/` before giving detailed parameter advice.
 - If interpolation is poor, crossings are damaged, or windows are unstable, route to `debug/routing-taxonomy.md` and `wannier/poor-construction-analysis.md`.
 - For setup questions, load the matching file in `wannier/cookbook/` and the decision tables before drafting a first-pass `wannier90.win`.
@@ -35,6 +36,7 @@
 - Use `scripts/inspect_vasp_run.py` and `scripts/inspect_wannier_run.py` for read-only summaries of outputs.
 - On shared filesystems, prefer direct physical outputs such as `scf/OUTCAR`, `wannier/wannier90.wout`, `band/OUTCAR`, and `wannier90_band.dat` over generic scheduler logs like `jobrun.out` and `jobrun.err`.
 - If the core Wannier and band outputs exist but the expected figure files do not, treat the first diagnosis as a post-processing or plotting failure rather than an immediate Wannier-construction failure.
+- Keep one Fermi reference across the whole VASP-versus-Wannier comparison, preferably the converged SCF `E_F`.
 - If the prompt contains explicit versions, raw errors, or cross-software compatibility questions, consult `official-sources.md` before summarizing.
 
 ## Checkpoint 5: Report with uncertainty

@@ -12,6 +12,12 @@
 2. compare near-Fermi interpolation and crossings before preferring the new run
 3. if `exclude_bands` plus revised frozen/outer windows improve the physically relevant region, keep that subspace even if the total spread grows
 
+## If total spread looks large but per-WF spreads are normal
+
+1. inspect the final per-WF spread distribution instead of stopping at `Omega Total`
+2. compare the band interpolation quality in the target region
+3. only if several individual WFs still look abnormal should you revisit the setup from the spread side
+
 ## If slight frozen-window changes cause instability
 
 1. treat this as a setup-robustness problem

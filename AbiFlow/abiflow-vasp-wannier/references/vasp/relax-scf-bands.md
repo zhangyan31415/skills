@@ -13,6 +13,8 @@
 - SCF: whether the electronic density is converged for the target physics.
 - Bands: whether the path and energy reference are usable for projection and window decisions.
 - Inputs: whether `INCAR` stays lean and uses `LREAL = .FALSE.` unless there is a clear reason to do otherwise.
+- In parallel runs, whether the actual `NBANDS` reported in `OUTCAR` still matches the intended handoff logic.
+- In a standard non-SCF band step, whether any warning that appears is actually fatal or just a known force/stress warning.
 
 ## Common mistakes
 
@@ -24,4 +26,6 @@
 - Treating `NELM=1` as a universal default for the first band step.
 - Carrying `ISYM = -1` into non-SOC non-SCF runs when the intended first pass is `ISYM = 2`.
 - Leaving symmetry choices unexamined in SOC-enabled non-SCF or delicate symmetry-lowered cases just for convenience.
+- Trusting `INCAR` alone for the final `NBANDS` in a parallel run instead of reading the actual value from `OUTCAR`.
+- Treating `WARNING: stress and forces are not correct` in a non-SCF band step as a fatal error by itself.
 - Using `LREAL = Auto` or `LREAL = .TRUE.` by habit in runs meant for Wannier handoff.
