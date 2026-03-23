@@ -16,6 +16,13 @@ Use this file when the workflow technically completes but the constructed model 
 - First fix: re-check the frozen window against the actual target bands
 - Escalation path: revisit projections and disentanglement together rather than tuning one in isolation
 
+## Symptom: lower spread but worse interpolation
+
+- Likely cause: the localization metric improved while the selected Wannier subspace drifted away from the physically correct manifold
+- Evidence to inspect: near-Fermi interpolation quality, preserved crossings, orbital character, the effect of `exclude_bands`, and how the frozen and outer windows changed the selected states
+- First fix: prioritize the correct target subspace and near-Fermi fidelity over minimizing total spread; test `exclude_bands` and reset the frozen/outer windows around the intended states
+- Escalation path: if the better physical subspace still looks unstable, revisit projections, band counting, and the actual VASP-generated handoff files together
+
 ## Symptom: missing or damaged crossings
 
 - Likely cause: the frozen window protects the wrong states or the chosen basis breaks the desired connectivity

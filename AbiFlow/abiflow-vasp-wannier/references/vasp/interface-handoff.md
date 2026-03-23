@@ -14,12 +14,15 @@ Use this file when deciding whether the VASP side is ready for a meaningful Wann
 
 - `num_bands` belongs to the VASP-to-Wannier handoff, not to the chemistry alone.
 - Keep it consistent with the exported interface files.
+- Do not treat a hand-written `NBANDS` as the final answer for later Wannier windowing or diagnostics.
+- Use the actual VASP-generated `wannier90.win` and `wannier90.eig` as the source of truth for final band counting, window placement, and downstream checks.
 - Do not guess exact interface-file semantics for unsupported or weak version families.
 
 ## How to think about `exclude_bands`
 
 - Treat `exclude_bands` as a last-mile interface refinement, not the first tool for fixing a bad physical manifold.
 - If the manifold is wrong, change the subspace or projection family first.
+- Use it when the physically correct subspace is clear but the exported band pool still includes states that should not participate in the Wannier model.
 
 ## How to think about `PROCAR`
 
@@ -35,12 +38,20 @@ Use this file when deciding whether the VASP side is ready for a meaningful Wann
 - keep `EDIFF = 1E-6` unless the user explicitly asks for a different convergence target
 - keep `LREAL = .FALSE.` for reliable Wannier handoff unless the user explicitly overrides this
 - use `ISYM = 2` for SCF and for non-SCF steps without SOC, and switch SOC-enabled non-SCF steps to `ISYM = -1`
+- for nonmagnetic SOC setups, keep the magnetic moments explicitly zero-valued rather than leaving the state implicit
 - for band-structure paths, use 20 points per path segment unless the user explicitly asks for a different density
 - write `WAVECAR` and read it back with `ISTART = 1` for the Wannier-interface step
 - if the first interface run has no `WAVECAR` yet, copy the converged SCF `WAVECAR` into the interface directory before running
 - if the user only changes projections for a follow-up interface export, reuse the `WAVECAR` from the first successful interface run
 - do not leave symmetry choices on autopilot; if a guarded non-SOC case looks suspicious in orbital character or crossings, retry with `ISYM = 0` before over-tuning Wannier windows
 - if the SCF baseline did not converge, stop and fix the SCF parameters before exporting interface files
+
+## Queue-environment guardrails
+
+- keep the submission wrapper and the compute-node execution path logically separate
+- a PBS submission script such as `vasprun.pbs` should be submission-only and should exit early if `PBS_NODEFILE` is absent
+- if the user is iterating on windows or projections, prefer explicit restart or skip controls such as `SKIP_SCF`, `SKIP_WANNIER_INTERFACE`, `SKIP_BAND`, and `SKIP_PLOT`
+- on shared filesystems, validate the handoff with physical outputs such as `OUTCAR`, `.wout`, and exported band data rather than relying on scheduler logs alone
 
 ## Wannier execution boundary
 

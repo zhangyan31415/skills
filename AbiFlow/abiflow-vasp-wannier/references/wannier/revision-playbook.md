@@ -6,6 +6,12 @@
 2. re-check the projection family
 3. only then revisit frozen and outer windows
 
+## If lower spread gives worse interpolation
+
+1. stop treating smaller total spread as automatic progress
+2. compare near-Fermi interpolation and crossings before preferring the new run
+3. if `exclude_bands` plus revised frozen/outer windows improve the physically relevant region, keep that subspace even if the total spread grows
+
 ## If slight frozen-window changes cause instability
 
 1. treat this as a setup-robustness problem

@@ -4,6 +4,8 @@
 
 - count the target localized manifold first
 - only enlarge `num_wann` when the physics proves the compact manifold is incomplete
+- do not conflate a hand-written VASP `NBANDS` with the final interface-side band count
+- once the VASP-to-Wannier handoff exists, use the actual VASP-generated `wannier90.win` and `wannier90.eig` as the source of truth for final band counting and window logic
 
 ## Case-specific guidance
 
