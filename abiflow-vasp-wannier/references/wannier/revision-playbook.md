@@ -6,6 +6,18 @@
 2. re-check the projection family
 3. only then revisit frozen and outer windows
 
+## If lower spread gives worse interpolation
+
+1. stop treating smaller total spread as automatic progress
+2. compare near-Fermi interpolation and crossings before preferring the new run
+3. if `exclude_bands` plus revised frozen/outer windows improve the physically relevant region, keep that subspace even if the total spread grows
+
+## If total spread looks large but per-WF spreads are normal
+
+1. inspect the final per-WF spread distribution instead of stopping at `Omega Total`
+2. compare the band interpolation quality in the target region
+3. only if several individual WFs still look abnormal should you revisit the setup from the spread side
+
 ## If slight frozen-window changes cause instability
 
 1. treat this as a setup-robustness problem
@@ -16,9 +28,16 @@
 
 1. promote to a richer manifold if the compact basis is undersized
 2. only after that tune windows
+3. if near-Fermi composition is central to the diagnosis, prefer projection output taken directly from the converged SCF run
 
 ## If crossings are damaged
 
 1. protect the physically required states first
 2. then revisit the projection family
 3. only then revisit the outer window
+
+## If the wrong high-energy band seems to be selected
+
+1. inspect the overlaid dispersion first
+2. then check the raw local `k`-point energies in the suspicious region
+3. only after that revisit projections or window choices

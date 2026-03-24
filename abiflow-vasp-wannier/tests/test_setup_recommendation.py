@@ -28,6 +28,7 @@ def test_isolated_insulator_recommendation_is_concrete():
     assert rec["case_id"] == "isolated_insulator"
     assert rec["num_wann"] == 4
     assert rec["num_wann_counting_explanation"]
+    assert "projection lines" in rec["num_wann_counting_explanation"].lower()
     assert rec["projection_candidates"]
     assert rec["disentanglement_needed"] is False
     assert rec["disentanglement_reasoning"]
@@ -38,6 +39,8 @@ def test_isolated_insulator_recommendation_is_concrete():
     assert rec["recommended_vasp_band_settings"]["nelm_value"] != 1
     assert rec["recommended_vasp_band_settings"]["symmetry_mode"] == "keep_on_initially"
     assert rec["recommended_vasp_band_settings"]["prec_value"] == "Normal"
+    assert rec["recommended_vasp_band_settings"]["ediff_value"] == "1E-6"
+    assert rec["recommended_structure_policy"]["structural_relaxation_default"] is False
     assert rec["validation_checks"]
     assert rec["first_revision_actions_ranked"]
 
@@ -59,11 +62,15 @@ def test_entangled_metal_recommendation_contains_window_logic():
     assert rec["disentanglement_reasoning"]
     assert rec["window_strategy"] in {"moderate", "broad"}
     assert rec["numeric_window_recommendation"] is not None
+    assert rec["window_recommendation"]["energy_reference"] == "absolute_wannier_eig"
     assert "iprint = 3" in rec["minimal_win_fields"]
     assert any("dis_win_" in field for field in rec["minimal_win_fields"])
     assert any("dis_froz_" in field for field in rec["minimal_win_fields"])
     assert rec["recommended_vasp_band_settings"]["nelm_value"] != 1
+    assert rec["recommended_vasp_band_settings"]["ediff_value"] == "1E-6"
     assert rec["recommended_vasp_band_settings"]["symmetry_mode"] == "guarded"
+    assert "subspace" in rec["first_revision_actions_ranked"][0].lower()
+    assert any("95%" in check or "worst" in check.lower() for check in rec["validation_checks"])
 
 
 def test_same_physics_case_keeps_setup_logic_but_changes_interface_guardrails():
@@ -103,4 +110,30 @@ def test_soc_case_disables_symmetry_for_band_step():
     )
 
     assert rec["recommended_vasp_band_settings"]["symmetry_mode"] == "disable"
-    assert rec["recommended_vasp_band_settings"]["isym_value"] == 0
+    assert rec["recommended_vasp_band_settings"]["isym_value"] == -1
+
+
+def test_noncollinear_case_starts_from_guarded_isym2():
+    rec = recommend_wannier_setup(
+        ROOT,
+        _load_case("noncollinear-magnetic.json"),
+        vasp_version="6.4.2",
+        wannier_version="3.1.0",
+    )
+
+    assert rec["recommended_vasp_band_settings"]["symmetry_mode"] == "guarded"
+    assert rec["recommended_vasp_band_settings"]["isym_value"] == 2
+    assert rec["recommended_vasp_band_settings"]["fallback_isym_value"] == 0
+
+
+def test_mixed_orbital_case_starts_from_guarded_isym2():
+    rec = recommend_wannier_setup(
+        ROOT,
+        _load_case("mixed-orbital-manifold.json"),
+        vasp_version="6.4.2",
+        wannier_version="3.1.0",
+    )
+
+    assert rec["recommended_vasp_band_settings"]["symmetry_mode"] == "guarded"
+    assert rec["recommended_vasp_band_settings"]["isym_value"] == 2
+    assert rec["recommended_vasp_band_settings"]["fallback_isym_value"] == 0

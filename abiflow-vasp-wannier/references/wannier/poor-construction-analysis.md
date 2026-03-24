@@ -1,6 +1,6 @@
 # Poor Wannier Construction Analysis
 
-Use this file when the workflow technically completes but the constructed model is not physically trustworthy.
+Use this file when the workflow technically completes but the constructed model is not physically trustworthy. If the failure is specifically about a narrow target window such as near `E_F`, also load [`target-window-revision.md`](target-window-revision.md).
 
 ## Symptom: large spreads
 
@@ -12,8 +12,8 @@ Use this file when the workflow technically completes but the constructed model 
 ## Symptom: interpolated band distortion
 
 - Likely cause: the selected subspace preserves the wrong states or loses critical crossings
-- Evidence to inspect: interpolated vs. ab initio bands around the distorted region
-- First fix: re-check the frozen window against the actual target bands
+- Evidence to inspect: interpolated vs. ab initio bands around the distorted region, then the raw local `k`-point energies if a specific band choice looks wrong
+- First fix: re-check whether the target subspace itself is physically complete before doing another window sweep
 - Escalation path: revisit projections and disentanglement together rather than tuning one in isolation
 
 ## Symptom: missing or damaged crossings
@@ -22,6 +22,13 @@ Use this file when the workflow technically completes but the constructed model 
 - Evidence to inspect: band comparison at the affected crossing and orbital character nearby
 - First fix: protect the physically required states first, then rebuild the window logic
 - Escalation path: test whether the target basis itself is incomplete for the crossing physics
+
+## Symptom: suspect wrong high-energy band was selected
+
+- Likely cause: the disentangled subspace is tracking the wrong local branch, or a high-energy comparison is being forced into a one-to-one band-index mapping
+- Evidence to inspect: the overlaid dispersion first, then the raw local `k`-point energies in the suspicious region
+- First fix: stop treating the band index in `wannier90_band.dat` like it must match the original VASP band number and re-evaluate the local energy ordering
+- Escalation path: use target-window energy-set validation and revisit the projections and frozen-window definition together if the local branch still looks wrong
 
 ## Symptom: orbital leakage or wrong character
 
@@ -47,9 +54,16 @@ Use this file when the workflow technically completes but the constructed model 
 ## Symptom: spread not huge but interpolation still poor
 
 - Likely cause: numerical localization succeeded without preserving the right physics
-- Evidence to inspect: crossing preservation, orbital character, and target-window fidelity
+- Evidence to inspect: crossing preservation, orbital character, missing bands in the target window, the 95% interpolation error, and the worst local mismatch
 - First fix: treat this as a validation failure, not a spread-only issue
-- Escalation path: revisit projections and windows together
+- Escalation path: revisit projections first, then retune the outer-window edges with the narrow target window explicitly in mind
+
+## Symptom: disentanglement runs for a long time
+
+- Likely cause: the iterative disentanglement is still converging rather than failing outright
+- Evidence to inspect: whether there is any hard error and whether the objective keeps decreasing monotonically
+- First fix: let the run continue to convergence or the iteration limit before discarding the setup
+- Escalation path: if the objective stalls or a hard error appears, then revisit the target subspace and window robustness
 
 ## Symptom: slight window change causes severe instability
 

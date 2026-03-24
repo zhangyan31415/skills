@@ -14,10 +14,10 @@ FIXTURES = ROOT / "tests" / "fixtures"
 def test_parse_energy_list_ignores_comments_and_grabs_first_float():
     energies = parse_energy_list((FIXTURES / "bands.sample.dat").read_text())
 
-    assert energies == [-3.0, -0.5, 0.8, 1.5]
+    assert energies == [2.1, 4.6, 5.9, 6.6]
 
 
 def test_recommend_energy_window_adds_padding_around_selected_bandset():
-    window = recommend_energy_window([-3.0, -0.5, 0.8, 1.5], fermi=0.0, padding=0.2)
+    window = recommend_energy_window([2.1, 4.6, 5.9, 6.6], fermi=5.1, padding=0.2)
 
-    assert window == {"min": -3.2, "max": 1.7, "fermi": 0.0}
+    assert window == {"min": 1.9, "max": 6.8, "fermi": 5.1}

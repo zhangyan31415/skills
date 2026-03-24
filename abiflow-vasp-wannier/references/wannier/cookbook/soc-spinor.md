@@ -28,7 +28,7 @@
 
 ## Projection strategy
 
-- First-pass candidate: `heavy-species:px, py, pz`
+- First-pass candidate: `heavy-species:px(u), py(u), pz(u), px(d), py(d), pz(d)`
 - If the SOC-split manifold leaks, compare against a richer spinor manifold with the nearest hybridizing orbitals
 
 ## Whether disentanglement is needed
@@ -38,8 +38,8 @@
 
 ## How to choose first-pass windows
 
-- keep the frozen window tight around the SOC-split target manifold
-- only broaden the outer window enough to preserve nearby hybridizing spinor states
+- keep the frozen window tight around the SOC-split target manifold using absolute energies from `wannier90.eig`
+- only broaden the outer window enough to preserve nearby hybridizing spinor states, still in absolute energies from `wannier90.eig`
 
 ## Minimal `wannier90.win` skeleton
 
@@ -49,9 +49,12 @@ num_wann = 6
 num_iter = 200
 spinors = true
 begin projections
-heavy-species:px
-heavy-species:py
-heavy-species:pz
+heavy-species:px(u)
+heavy-species:py(u)
+heavy-species:pz(u)
+heavy-species:px(d)
+heavy-species:py(d)
+heavy-species:pz(d)
 end projections
 ```
 

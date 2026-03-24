@@ -7,6 +7,7 @@ Use `PROCAR` when chemistry alone does not cleanly decide between multiple plaus
 - compact `d` versus richer `d+p` manifolds both look plausible
 - orbital leakage suggests the compact manifold may be undersized
 - the target observable depends on preserving orbital character, not only band energies
+- near-Fermi orbital composition is part of the actual diagnosis, not just a nice-to-have annotation
 
 ## What to inspect
 
@@ -16,6 +17,8 @@ Use `PROCAR` when chemistry alone does not cleanly decide between multiple plaus
 
 ## Guardrails
 
+- Prefer projection output taken directly from the converged SCF calculation.
+- If you expect to need near-Fermi orbital composition later, turn on the required projection output in SCF ahead of time.
 - use `PROCAR` to rank plausible orbital families, not to replace the target observable
 - do not promote a richer manifold because of tiny admixtures alone
 - if `PROCAR` and the target observable disagree, let the observable decide the final manifold

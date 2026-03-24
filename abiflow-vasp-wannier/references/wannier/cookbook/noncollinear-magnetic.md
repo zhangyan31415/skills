@@ -27,8 +27,8 @@
 
 ## Projection strategy
 
-- First-pass candidate: `transition-metal:d`
-- Richer fallback: `transition-metal:d + ligand:p` if the magnetic manifold is too hybridized for the compact basis
+- First-pass candidate: `transition-metal:d(u), d(d)`
+- Richer fallback: `transition-metal:d(u), d(d) + ligand:p(u), p(d)` if the magnetic manifold is too hybridized for the compact basis
 
 ## Whether disentanglement is needed
 
@@ -37,8 +37,8 @@
 
 ## How to choose first-pass windows
 
-- protect the magnetically relevant manifold first
-- broaden only enough to keep the symmetry-lowered manifold connected
+- protect the magnetically relevant manifold first using absolute energies from `wannier90.eig`
+- broaden only enough to keep the symmetry-lowered manifold connected, still in absolute energies from `wannier90.eig`
 
 ## Minimal `wannier90.win` skeleton
 
@@ -48,7 +48,8 @@ num_wann = 10
 num_iter = 200
 spinors = true
 begin projections
-transition-metal:d
+transition-metal:d(u)
+transition-metal:d(d)
 end projections
 ```
 

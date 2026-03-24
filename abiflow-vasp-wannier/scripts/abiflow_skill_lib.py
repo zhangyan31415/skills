@@ -30,6 +30,7 @@ DEFAULT_CONTEXT: Dict[str, Any] = {
     },
     "executables": {
         "vasp_std": None,
+        "vasp_ncl": None,
         "wannier90": None,
     },
     "launcher": {

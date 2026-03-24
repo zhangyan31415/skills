@@ -1,7 +1,7 @@
 [validation_distortion]
 likely_causes_ranked = ["target manifold is physically incomplete", "projection family is too small", "frozen window protects the wrong states"]
 what_to_change_first = "revisit_target_subspace"
-what_not_to_change_yet = ["Do not jump straight to spread tuning.", "Do not widen the outer window before checking the manifold itself."]
+what_not_to_change_yet = ["Do not jump straight to spread tuning.", "Do not widen the outer window before checking the manifold itself.", "Do not keep sweeping windows before checking whether the target subspace is physically complete."]
 revisit_target_subspace = true
 revisit_projections = true
 revisit_frozen_window = true
@@ -10,7 +10,7 @@ revisit_outer_window = false
 [setup_instability]
 likely_causes_ranked = ["target subspace is not robust", "projection family is inconsistent with the intended manifold", "frozen window is too sensitive to small changes"]
 what_to_change_first = "revisit_projections"
-what_not_to_change_yet = ["Do not broaden the outer window yet.", "Do not treat this as a late-stage optimization-only problem."]
+what_not_to_change_yet = ["Do not broaden the outer window yet.", "Do not treat this as a late-stage optimization-only problem.", "Do not repeat window sweeps until the subspace definition itself is robust."]
 revisit_target_subspace = true
 revisit_projections = true
 revisit_frozen_window = true
@@ -19,7 +19,7 @@ revisit_outer_window = false
 [orbital_mismatch]
 likely_causes_ranked = ["projection family misses important orbital weight", "compact manifold is undersized", "target manifold is physically incomplete"]
 what_to_change_first = "revisit_projections"
-what_not_to_change_yet = ["Do not use spread reduction as the first fix.", "Do not patch the issue with exclude_bands first."]
+what_not_to_change_yet = ["Do not use spread reduction as the first fix.", "Do not patch the issue with exclude_bands first.", "Do not treat repeated window tuning as the first remedy for a missing-orbital problem."]
 revisit_target_subspace = true
 revisit_projections = true
 revisit_frozen_window = false

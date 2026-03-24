@@ -26,6 +26,7 @@ wannier90 = "3.1.0"
 
 [executables]
 vasp_std = "vasp_std"
+vasp_ncl = "vasp_ncl"
 wannier90 = "wannier90.x"
 
 [launcher]
@@ -37,6 +38,7 @@ module_load = ["vasp/6.4.2", "wannier90/3.1.0"]
 soc = true
 noncollinear = true
 spin_polarized = true
+wannier90_parallel = true
 ```
 
 ## Field semantics
@@ -47,6 +49,7 @@ spin_polarized = true
 - `launcher.mpi`: launch wrapper such as `srun`, `mpirun`, or `jsrun`.
 - `launcher.module_load`: environment setup hints; never invent these when absent.
 - `capabilities.*`: booleans the skill can require before recommending certain paths.
+- `capabilities.wannier90_parallel`: whether the runtime profile supports running `wannier90.x` in parallel.
 
 ## Failure policy
 

@@ -12,7 +12,7 @@
 - isolated insulating sp-like manifolds: start from the compact valence-like basis
 - entangled d-band metals: start from the smallest low-energy d manifold that matches the observable
 - mixed manifolds: compare a compact candidate against one richer hybridized fallback
-- SOC or noncollinear cases: use a spinor-compatible projection family
+- SOC or noncollinear cases: use a spinor-compatible projection family and specify the spin channel explicitly with `(u)` and/or `(d)` when the projections are spin-resolved
 
 See `cookbook/`, `parameter-decision-table.md`, and `../vasp/procar-analysis.md` for concrete first-pass choices.
 
@@ -21,3 +21,4 @@ See `cookbook/`, `parameter-decision-table.md`, and `../vasp/procar-analysis.md`
 - If the user cannot name the target orbitals, do not jump to a `projections` line.
 - If a projection basis is chemically implausible, say so before refining syntax.
 - When multiple projection families are plausible, explain the trade-off instead of pretending there is one obvious answer.
+- If the fit is poor, re-check whether the target subspace is physically complete before running repeated window sweeps.

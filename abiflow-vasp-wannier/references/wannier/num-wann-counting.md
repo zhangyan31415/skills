@@ -3,6 +3,9 @@
 ## Core rule
 
 - count the target localized manifold first
+- do not treat the number of projection lines as automatically equal to `num_wann`
+- include equivalent atoms, scalar spin channels, and any spinor doubling in the actual WF count
+- before increasing `num_wann`, verify that every `k` point on the actual uniform mesh has at least `num_wann` KS states inside the chosen outer window
 - only enlarge `num_wann` when the physics proves the compact manifold is incomplete
 
 ## Case-specific guidance

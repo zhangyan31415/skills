@@ -19,7 +19,7 @@ except ModuleNotFoundError:  # pragma: no cover
 
 DEFAULT_CONTEXT: Dict[str, Any] = {
     "software": {"vasp": None, "wannier90": None},
-    "executables": {"vasp_std": None, "wannier90": None},
+    "executables": {"vasp_std": None, "vasp_ncl": None, "wannier90": None},
     "launcher": {"kind": None, "mpi": None, "module_load": []},
     "capabilities": {},
 }

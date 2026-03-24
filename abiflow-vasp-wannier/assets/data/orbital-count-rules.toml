@@ -1,23 +1,23 @@
 [isolated_insulator]
 count_mode = "target_orbital_count"
-counting_explanation = "Count the localized orbitals in the isolated target manifold per cell and keep num_wann minimal."
+counting_explanation = "Count the localized orbitals in the isolated target manifold per cell and keep num_wann minimal. Do not equate num_wann with the number of projection lines; equivalent atoms, spin channels, and any spinor doubling all contribute to the actual WF count."
 
 [entangled_metal]
 count_mode = "target_orbital_count"
-counting_explanation = "Count the compact low-energy target manifold first; only promote to a richer manifold if crossings or orbital character force it."
+counting_explanation = "Count the compact low-energy target manifold first; only promote to a richer manifold if crossings or orbital character force it. Do not equate num_wann with the number of projection lines; equivalent atoms, spin channels, and any spinor doubling all contribute to the actual WF count."
 
 [spin_polarized_no_soc]
 count_mode = "target_orbital_count"
-counting_explanation = "Count orbitals per scalar spin channel; do not double num_wann unless a true spinor model is required."
+counting_explanation = "Count orbitals per scalar spin channel; do not double num_wann unless a true spinor model is required. Do not equate num_wann with the number of projection lines; equivalent atoms and spin channels both contribute to the actual WF count."
 
 [soc_spinor]
 count_mode = "double_target_orbital_count"
-counting_explanation = "Count the target orbital manifold first, then double it for the spinor basis."
+counting_explanation = "Count the target orbital manifold first, then double it for the spinor basis. Do not equate num_wann with the number of projection lines; equivalent atoms and the spinor expansion both contribute to the actual WF count."
 
 [noncollinear_magnetic]
 count_mode = "double_target_orbital_count"
-counting_explanation = "Count the magnetic target manifold first, then double it for the symmetry-lowered spinor-like basis."
+counting_explanation = "Count the magnetic target manifold first, then double it for the symmetry-lowered spinor-like basis. Do not equate num_wann with the number of projection lines; equivalent atoms and the spinor-like expansion both contribute to the actual WF count."
 
 [mixed_orbital_manifold]
 count_mode = "candidate_default"
-counting_explanation = "Start from the smallest physically complete candidate family and only promote num_wann if the observable proves it is incomplete."
+counting_explanation = "Start from the smallest physically complete candidate family and only promote num_wann if the observable proves it is incomplete. Do not equate num_wann with the number of projection lines; equivalent atoms, spin channels, and any spinor doubling all contribute to the actual WF count."
